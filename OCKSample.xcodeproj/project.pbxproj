@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0B7E4EDB2F5A2B65002E86E9 /* AddHealthKitTaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7E4EDA2F5A2B65002E86E9 /* AddHealthKitTaskView.swift */; };
+		0B7E4EDC2F5A2B65002E86E9 /* AddHealthKitTaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7E4EDA2F5A2B65002E86E9 /* AddHealthKitTaskView.swift */; };
 		5173CB8A23C3A846007655A0 /* OCKSampleUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5173CB8923C3A846007655A0 /* OCKSampleUITests.swift */; };
 		70077597252228E900EC0EDA /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70077596252228E900EC0EDA /* User.swift */; };
 		7007759B252229C900EC0EDA /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70077596252228E900EC0EDA /* User.swift */; };
@@ -224,6 +226,7 @@
 /* Begin PBXFileReference section */
 		03580E3E23CFA2E400A57818 /* OCKSample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = OCKSample.entitlements; sourceTree = "<group>"; };
 		0520468223C3C1F2004F0F36 /* OCKSample.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = OCKSample.xctestplan; sourceTree = "<group>"; };
+		0B7E4EDA2F5A2B65002E86E9 /* AddHealthKitTaskView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddHealthKitTaskView.swift; sourceTree = "<group>"; };
 		5173CB8723C3A846007655A0 /* OCKSampleUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OCKSampleUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5173CB8923C3A846007655A0 /* OCKSampleUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCKSampleUITests.swift; sourceTree = "<group>"; };
 		5173CB8B23C3A846007655A0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -434,6 +437,7 @@
 			isa = PBXGroup;
 			children = (
 				7036E4C8256E1A6F006E9A3C /* ProfileView.swift */,
+				0B7E4EDA2F5A2B65002E86E9 /* AddHealthKitTaskView.swift */,
 				7036E516256F2413006E9A3C /* ProfileViewModel.swift */,
 				A8C2D8F52F599E22006B971F /* AddTaskView.swift */,
 				A8C2D8F82F59A9BA006B971F /* ManageTasksView.swift */,
@@ -969,6 +973,7 @@
 				707D294B2DCBE68500980253 /* TipView.swift in Sources */,
 				707D29712DCBE6A000980253 /* OCKLocalization.swift in Sources */,
 				707D294C2DCBE68500980253 /* StoreCoordinatorKey.swift in Sources */,
+				0B7E4EDB2F5A2B65002E86E9 /* AddHealthKitTaskView.swift in Sources */,
 				707D294D2DCBE68500980253 /* InsightsView.swift in Sources */,
 				707D294E2DCBE68500980253 /* OCKHealthKitPassthroughStore.swift in Sources */,
 				707D294F2DCBE68500980253 /* OCKStore+SampleData.swift in Sources */,
@@ -1110,6 +1115,7 @@
 				E7C37849228F887800E982D8 /* TipView.swift in Sources */,
 				A8C2D8F02F598A4A006B971F /* AnimationStyler.swift in Sources */,
 				70077597252228E900EC0EDA /* User.swift in Sources */,
+				0B7E4EDC2F5A2B65002E86E9 /* AddHealthKitTaskView.swift in Sources */,
 				7036E4C9256E1A6F006E9A3C /* ProfileView.swift in Sources */,
 				7083A856279CA40A00B3832E /* PCKUtility.swift in Sources */,
 				70B8E0A52F0EC1CA00440FCA /* Mutex.swift in Sources */,
