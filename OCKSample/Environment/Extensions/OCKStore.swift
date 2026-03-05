@@ -133,12 +133,46 @@ extension OCKStore {
         stretch.impactsAdherence = true
         stretch.asset = "figure.walk"
 
+        var medication = OCKTask(
+            id: TaskID.medication,
+            title: String("Take Methylphenidate"),
+            carePlanUUID: nil,
+            schedule: schedule
+        )
+        medication.instructions = String("Take orally twice a day with food")
+        medication.asset = "pills.fill"
+
+        let cognitiveLapseLoggerSchedule = OCKSchedule(
+            composing: [
+                OCKScheduleElement(
+                    start: beforeBreakfast,
+                    end: nil,
+                    interval: DateComponents(day: 1),
+                    text: String(localized: "ANYTIME_DURING_DAY"),
+                    targetValues: [],
+                    duration: .allDay
+                )
+            ]
+        )
+
+        var cognitiveLapseLogger = OCKTask(
+            id: TaskID.cognitiveLapseLogger,
+            title: String("Track Cognitive Lapse"),
+            carePlanUUID: nil,
+            schedule: cognitiveLapseLoggerSchedule
+        )
+        cognitiveLapseLogger.impactsAdherence = false
+        cognitiveLapseLogger.instructions = String("When you start feeling brain fog, press")
+        cognitiveLapseLogger.asset = "bed.double"
+
         _ = try await addTasksIfNotPresent(
             [
-                nausea,
-                doxylamine,
-                kegels,
-                stretch
+                medication,
+                cognitiveLapseLogger
+//                nausea,
+//                doxylamine,
+//                kegels,
+//                stretch
             ]
         )
 

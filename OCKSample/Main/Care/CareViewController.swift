@@ -28,6 +28,8 @@
  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+// swiftlint:disable type_body_length
+
 import CareKit
 import CareKitEssentials
 import CareKitStore
@@ -177,7 +179,7 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
         }
         #endif
 
-        fetchAndDisplayTasks(on: listViewController, for: date)
+        // fetchAndDisplayTasks(on: listViewController, for: date)
     }
 
     private func isSameDay(as date: Date) -> Bool {
@@ -212,14 +214,14 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
         query.excludesTasksWithNoEvents = true
         do {
             let tasks = try await store.fetchAnyTasks(query: query)
-            
+
             let orderedTasks = TaskID.ordered.compactMap { orderedTaskID in
                 tasks.first(where: { $0.id == orderedTaskID })
             }
-            
+
             let knownIDs = Set(TaskID.ordered)
             let userCreatedTasks = tasks.filter { !knownIDs.contains($0.id) }
-            
+
             return orderedTasks + userCreatedTasks
         } catch {
             Logger.feed.error("Could not fetch tasks: \(error, privacy: .public)")
@@ -285,6 +287,39 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
             return [card]
         #endif
 
+        #if os(iOS)
+        // Create a card for the doxylamine task if there are events for it on this day.
+        case TaskID.medication:
+
+            // This is a UIKit based card.
+            let card = OCKChecklistTaskViewController(
+                query: query,
+                store: self.store
+            )
+
+            return [card]
+        #endif
+
+
+        case TaskID.cognitiveLapseLogger:
+
+            #if os(iOS)
+            /*
+             Also create a card (UIKit view) that displays a single event.
+             The event query passed into the initializer specifies that only
+             today's log entries should be displayed by this log task view controller.
+             */
+            let cognitiveLapseLoggerCard = OCKButtonLogTaskViewController(
+                query: query,
+                store: self.store
+            )
+
+            return [cognitiveLapseLoggerCard]
+
+            #else
+            return []
+            #endif
+
         case TaskID.nausea:
 
             #if os(iOS)
@@ -309,7 +344,7 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
                     query: query
                 )
                 .formattedHostingController()
-                
+
                 return [card]
         }
     }
@@ -351,3 +386,4 @@ private extension View {
         return viewController
     }
 }
+// swiftlint:enable type_body_length

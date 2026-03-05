@@ -6,11 +6,12 @@
 //  Copyright © 2020 Network Reconnaissance Lab. All rights reserved.
 //
 
-import CareKitUI
-import CareKitStore
 import CareKit
-import os.log
+import CareKitStore
+import CareKitEssentials
+import HealthKit
 import SwiftUI
+import os.log
 
 struct ProfileView: View {
 
@@ -19,6 +20,7 @@ struct ProfileView: View {
     @ObservedObject var loginViewModel: LoginViewModel
     @State private var showingAddTask = false
     @State private var showingManageTasks = false
+    @State private var showingAddHealthKitTask = false
 
     var body: some View {
         NavigationView {
@@ -80,8 +82,6 @@ struct ProfileView: View {
                 viewModel.updatePatient(publishedPatient.result)
             }
             .navigationTitle("Profile")
-            
-            
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     HStack {
@@ -90,8 +90,14 @@ struct ProfileView: View {
                         } label: {
                             Image(systemName: "trash")
                         }
-                        Button {
-                            showingAddTask = true
+
+                        Menu {
+                            Button("Add Task") {
+                                showingAddTask = true
+                            }
+                            Button("Add HealthKit Task") {
+                                showingAddHealthKitTask = true
+                            }
                         } label: {
                             Image(systemName: "plus")
                         }
@@ -103,6 +109,9 @@ struct ProfileView: View {
             }
             .sheet(isPresented: $showingAddTask) {
                 AddTaskView(viewModel: viewModel)
+            }
+            .sheet(isPresented: $showingAddHealthKitTask) {
+                AddHealthKitTaskView(viewModel: viewModel)
             }
         }
     }

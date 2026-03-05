@@ -9,7 +9,7 @@ struct AddTaskView: View {
     @State private var title = ""
     @State private var instructions = ""
     @State private var hour = 8
-    @State private var errorMessage: String? = nil
+    @State private var errorMessage: String?
     @State private var showError = false
 
     @ObservedObject var viewModel: ProfileViewModel
@@ -29,8 +29,6 @@ struct AddTaskView: View {
                     Stepper("Hour: \(hour)", value: $hour, in: 0...23)
 
                 }
-
-                
 
                 Section {
                     Button("Save Task") {

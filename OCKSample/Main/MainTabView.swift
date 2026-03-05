@@ -66,6 +66,9 @@ struct MainTabView: View {
 				}
 				.tag(3)
         }
+        .onReceive(NotificationCenter.default.publisher(for: Notification.Name(Constants.shouldRefreshView))) { _ in
+            selectedTab = 0
+        }
     }
 }
 

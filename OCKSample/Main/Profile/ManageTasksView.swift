@@ -14,8 +14,8 @@ struct ManageTasksView: View {
 
     @Environment(\.dismiss) var dismiss
     @ObservedObject var viewModel: ProfileViewModel
-    @State private var tasks: [OCKTask] = []
-    @State private var errorMessage: String? = nil
+    @State private var tasks: [OCKAnyTask] = [] 
+    @State private var errorMessage: String?
     @State private var isLoading = true
 
     var body: some View {
@@ -38,12 +38,18 @@ struct ManageTasksView: View {
                                             .font(.caption)
                                             .foregroundColor(.secondary)
                                     }
+
+                                    if task is OCKHealthKitTask {
+                                        Text("HealthKit")
+                                            .font(.caption2)
+                                            .foregroundColor(.blue)
+                                    }
                                 }
                                 Spacer()
                                 Button(role: .destructive) {
                                     Task {
                                         do {
-                                            try await viewModel.deleteTask(task)
+                                            try await viewModel.deleteAnyTask(task)
                                             tasks.removeAll { $0.id == task.id }
                                         } catch {
                                             errorMessage = error.localizedDescription
@@ -66,7 +72,7 @@ struct ManageTasksView: View {
             }
             .task {
                 do {
-                    tasks = try await viewModel.fetchAllTasks()
+                    tasks = try await viewModel.fetchAllAnyTasks()
                 } catch {
                     errorMessage = error.localizedDescription
                 }
