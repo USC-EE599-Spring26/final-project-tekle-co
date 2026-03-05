@@ -53,7 +53,7 @@ struct AddHealthKitTaskView: View {
                             Text(item.label).tag(item.identifier)
                         }
                     }
-                    .onChange(of: selectedQuantityType) { newValue in
+                    .onChange(of: selectedQuantityType) { _, newValue in
                         if let match = quantityTypes.first(where: { $0.identifier == newValue }) {
                             selectedUnit = match.unit
                         }

@@ -14,7 +14,7 @@ struct ManageTasksView: View {
 
     @Environment(\.dismiss) var dismiss
     @ObservedObject var viewModel: ProfileViewModel
-    @State private var tasks: [OCKAnyTask] = [] 
+    @State private var tasks: [OCKAnyTask] = []
     @State private var errorMessage: String?
     @State private var isLoading = true
 

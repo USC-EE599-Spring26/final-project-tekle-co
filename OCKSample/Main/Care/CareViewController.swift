@@ -300,7 +300,6 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
             return [card]
         #endif
 
-
         case TaskID.cognitiveLapseLogger:
 
             #if os(iOS)

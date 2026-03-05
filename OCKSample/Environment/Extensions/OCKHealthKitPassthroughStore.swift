@@ -65,7 +65,7 @@ extension OCKHealthKitPassthroughStore {
             )
         )
         ovulationTestResult.asset = "circle.dotted"
-        let tasks = [ steps, ovulationTestResult ]
+//        let tasks = [ steps, ovulationTestResult ]
 
 //        _ = try await addTasksIfNotPresent(tasks)
 
