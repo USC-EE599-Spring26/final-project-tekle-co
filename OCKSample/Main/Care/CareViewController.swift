@@ -212,10 +212,15 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
         query.excludesTasksWithNoEvents = true
         do {
             let tasks = try await store.fetchAnyTasks(query: query)
+            
             let orderedTasks = TaskID.ordered.compactMap { orderedTaskID in
                 tasks.first(where: { $0.id == orderedTaskID })
             }
-            return orderedTasks
+            
+            let knownIDs = Set(TaskID.ordered)
+            let userCreatedTasks = tasks.filter { !knownIDs.contains($0.id) }
+            
+            return orderedTasks + userCreatedTasks
         } catch {
             Logger.feed.error("Could not fetch tasks: \(error, privacy: .public)")
             return []
@@ -300,7 +305,12 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
             #endif
 
         default:
-            return nil
+            let card = EventQueryView<SimpleTaskView>(
+                    query: query
+                )
+                .formattedHostingController()
+                
+                return [card]
         }
     }
 
