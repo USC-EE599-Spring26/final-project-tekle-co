@@ -18,6 +18,8 @@ struct ProfileView: View {
     @StateObject private var viewModel = ProfileViewModel()
     @ObservedObject var loginViewModel: LoginViewModel
 
+    @State private var showSheet = false  // ADD THIS
+
     var body: some View {
         VStack {
             VStack(alignment: .leading) {
@@ -45,6 +47,23 @@ struct ProfileView: View {
                 .padding()
                 .cornerRadius(20.0)
                 .shadow(radius: 10.0, x: 20, y: 10)
+            }
+
+            Button(action: {
+                showSheet = true
+            }, label: {
+                Text(
+                    "Add Task"
+                )
+                .font(.headline)
+                .foregroundColor(.white)
+                .padding()
+                .frame(width: 300, height: 50)
+            })
+            .background(Color(.orange))
+            .cornerRadius(15)
+            .sheet(isPresented: $showSheet) {
+                TaskSheet(viewModel: viewModel, isPresented: $showSheet)
             }
 
             Button(action: {
@@ -94,6 +113,32 @@ struct ProfileView: View {
         OCKPatientQuery(for: Date())
     }
 
+}
+
+private struct TaskSheet: View {
+
+    @ObservedObject var viewModel: ProfileViewModel
+    @Binding var isPresented: Bool
+    @State private var takeMedication: Bool = false
+
+    var body: some View {
+        VStack {
+            Text("Take Medication? y/n")
+            Toggle("", isOn: $takeMedication)
+            Button("Add Task") {
+                guard takeMedication else { return }
+                Task {
+                    do {
+                        try await viewModel.addTask()
+                        isPresented = false
+                    } catch {
+                        Logger.profile.error("Error adding task: \(error)")
+                    }
+                }
+            }
+            Button("Cancel") { isPresented = false }
+        }
+    }
 }
 
 struct ProfileView_Previews: PreviewProvider {

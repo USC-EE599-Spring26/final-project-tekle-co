@@ -212,6 +212,13 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
         query.excludesTasksWithNoEvents = true
         do {
             let tasks = try await store.fetchAnyTasks(query: query)
+
+            for task in tasks {
+                print("Task ID:", task.id)
+                print("Task Title:", task.title ?? "No title")
+                print("----------------------------")
+            }
+
             let orderedTasks = TaskID.ordered.compactMap { orderedTaskID in
                 tasks.first(where: { $0.id == orderedTaskID })
             }
@@ -279,6 +286,17 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
 
             return [card]
         #endif
+
+        // Create a card for the medication task if there are events for it on this day.
+        case TaskID.medication:
+
+            // This is a UIKit based card.
+            let card = OCKChecklistTaskViewController(
+                query: query,
+                store: self.store
+            )
+
+            return [card]
 
         case TaskID.nausea:
 
