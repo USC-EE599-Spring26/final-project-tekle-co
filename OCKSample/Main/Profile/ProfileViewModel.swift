@@ -44,6 +44,26 @@ class ProfileViewModel: ObservableObject {
         self.patient = patient
     }
 
+    func addTask() {
+        // xTODO: needs to be something the user can add, Instructions Schedule and Title
+        guard let store = AppDelegateKey.defaultValue!.store else {
+            return
+        }
+        // Task occurs every day at 8:00 AM
+        let schedule = OCKSchedule.dailyAtTime(hour: 8, minutes: 0,
+                                              start: Date(),
+                                              end: nil,
+                                              text: "Take Medication2",
+                                              duration: .allDay)
+        var task = OCKTask(id: "medication2",
+                          title: "Take Medication2",
+                          carePlanUUID: nil,
+                          schedule: schedule)
+        task.instructions = "Take with food."
+
+        store.addTask(task)
+    }
+
     // MARK: User intentional behavior
 
     func saveProfile() async throws {
