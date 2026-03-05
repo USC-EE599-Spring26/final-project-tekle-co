@@ -1,11 +1,3 @@
-//
-//  Profile.swift
-//  OCKSample
-//
-//  Created by Corey Baker on 11/25/20.
-//  Copyright © 2020 Network Reconnaissance Lab. All rights reserved.
-//
-
 import CareKit
 import CareKitStore
 import CareKitEssentials
@@ -14,8 +6,6 @@ import os.log
 
 @MainActor
 class ProfileViewModel: ObservableObject {
-
-    // MARK: Public read/write properties
 
     var firstName = ""
     var lastName = ""
@@ -35,8 +25,6 @@ class ProfileViewModel: ObservableObject {
         }
     }
 
-    // MARK: Helpers (public)
-
     func updatePatient(_ patient: OCKAnyPatient) {
         guard let patient = patient as? OCKPatient else {
             return
@@ -44,15 +32,12 @@ class ProfileViewModel: ObservableObject {
         self.patient = patient
     }
 
-    // MARK: User intentional behavior
-
     func saveProfile() async throws {
 
         guard var patientToUpdate = patient else {
             throw AppError.errorString("The profile is missing the Patient")
         }
 
-        // If there is a currentPatient that was fetched, check to see if any of the fields changed
         var patientHasBeenUpdated = false
 
         if patient?.name.givenName != firstName {
@@ -80,4 +65,61 @@ class ProfileViewModel: ObservableObject {
             }
         }
     }
+
+    func createTask(title: String, instructions: String, hour: Int) async throws {
+
+        guard let store = AppDelegateKey.defaultValue?.store else {
+            throw AppError.errorString("Store not available")
+        }
+
+        let startOfDay = Calendar.current.startOfDay(for: Date())
+
+        let schedule = OCKSchedule.dailyAtTime(
+            hour: hour,
+            minutes: 0,
+            start: startOfDay,
+            end: nil,
+            text: nil  // Change this from instructions to nil
+        )
+
+        var task = OCKTask(
+            id: UUID().uuidString,
+            title: title,
+            carePlanUUID: nil,  // No care plan needed
+            schedule: schedule
+        )
+
+        task.instructions = instructions
+
+        _ = try await store.addAnyTask(task)
+
+        print("✅ Task saved successfully: \(title)")
+
+        NotificationCenter.default.post(
+            name: Notification.Name(rawValue: Constants.shouldRefreshView),
+            object: nil
+        )
+    }
+    
+    func fetchAllTasks() async throws -> [OCKTask] {
+        guard let store = AppDelegateKey.defaultValue?.store else {
+            throw AppError.errorString("Store not available")
+        }
+        let query = OCKTaskQuery(for: Date())
+        let tasks = try await store.fetchTasks(query: query)
+        return tasks
+    }
+
+    func deleteTask(_ task: OCKTask) async throws {
+        guard let store = AppDelegateKey.defaultValue?.store else {
+            throw AppError.errorString("Store not available")
+        }
+        
+        try await store.deleteAnyTask(task)
+        NotificationCenter.default.post(
+            name: Notification.Name(rawValue: Constants.shouldRefreshView),
+            object: nil
+        )
+    }
+    
 }

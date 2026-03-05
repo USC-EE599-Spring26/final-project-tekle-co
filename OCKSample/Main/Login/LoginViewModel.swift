@@ -6,12 +6,14 @@
 //  Copyright © 2020 Network Reconnaissance Lab. All rights reserved.
 //
 
+import Foundation
 import CareKit
 import CareKitStore
 import ParseCareKit
 import ParseSwift
 import os.log
 import WatchConnectivity
+// swiftlint:disable function_parameter_count
 
 @MainActor
 class LoginViewModel: ObservableObject {
