@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0B0087382F6E17AE008485B0 /* ResearchKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B0087342F6E17AE008485B0 /* ResearchKit.framework */; };
+		0B0087392F6E17AE008485B0 /* ResearchKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0B0087342F6E17AE008485B0 /* ResearchKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		0B00873A2F6E17AE008485B0 /* ResearchKitActiveTask.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B0087352F6E17AE008485B0 /* ResearchKitActiveTask.framework */; };
+		0B00873B2F6E17AE008485B0 /* ResearchKitActiveTask.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0B0087352F6E17AE008485B0 /* ResearchKitActiveTask.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		0B00873C2F6E17AE008485B0 /* ResearchKitTests.xctest in Embed PlugIns */ = {isa = PBXBuildFile; fileRef = 0B0087362F6E17AE008485B0 /* ResearchKitTests.xctest */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		0B00873D2F6E17AE008485B0 /* ResearchKitUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B0087372F6E17AE008485B0 /* ResearchKitUI.framework */; };
+		0B00873E2F6E17AE008485B0 /* ResearchKitUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0B0087372F6E17AE008485B0 /* ResearchKitUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		0B7E4EDB2F5A2B65002E86E9 /* AddHealthKitTaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7E4EDA2F5A2B65002E86E9 /* AddHealthKitTaskView.swift */; };
 		0B7E4EDC2F5A2B65002E86E9 /* AddHealthKitTaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7E4EDA2F5A2B65002E86E9 /* AddHealthKitTaskView.swift */; };
 		5173CB8A23C3A846007655A0 /* OCKSampleUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5173CB8923C3A846007655A0 /* OCKSampleUITests.swift */; };
@@ -200,12 +207,26 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		0B00873F2F6E17AE008485B0 /* Embed PlugIns */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				0B00873C2F6E17AE008485B0 /* ResearchKitTests.xctest in Embed PlugIns */,
+			);
+			name = "Embed PlugIns";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		51431FA223D166AE006A7CFD /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				0B00873E2F6E17AE008485B0 /* ResearchKitUI.framework in Embed Frameworks */,
+				0B0087392F6E17AE008485B0 /* ResearchKit.framework in Embed Frameworks */,
+				0B00873B2F6E17AE008485B0 /* ResearchKitActiveTask.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -226,6 +247,10 @@
 /* Begin PBXFileReference section */
 		03580E3E23CFA2E400A57818 /* OCKSample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = OCKSample.entitlements; sourceTree = "<group>"; };
 		0520468223C3C1F2004F0F36 /* OCKSample.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = OCKSample.xctestplan; sourceTree = "<group>"; };
+		0B0087342F6E17AE008485B0 /* ResearchKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = ResearchKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		0B0087352F6E17AE008485B0 /* ResearchKitActiveTask.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = ResearchKitActiveTask.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		0B0087362F6E17AE008485B0 /* ResearchKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = ResearchKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		0B0087372F6E17AE008485B0 /* ResearchKitUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = ResearchKitUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0B7E4EDA2F5A2B65002E86E9 /* AddHealthKitTaskView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddHealthKitTaskView.swift; sourceTree = "<group>"; };
 		5173CB8723C3A846007655A0 /* OCKSampleUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OCKSampleUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5173CB8923C3A846007655A0 /* OCKSampleUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCKSampleUITests.swift; sourceTree = "<group>"; };
@@ -333,7 +358,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				918FDEAF271B3F8F0045A0EF /* ParseCareKit in Frameworks */,
+				0B00873D2F6E17AE008485B0 /* ResearchKitUI.framework in Frameworks */,
 				708542F9276687F90029E888 /* HealthKit.framework in Frameworks */,
+				0B0087382F6E17AE008485B0 /* ResearchKit.framework in Frameworks */,
+				0B00873A2F6E17AE008485B0 /* ResearchKitActiveTask.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -375,6 +403,10 @@
 		51431F9723D166AE006A7CFD /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0B0087342F6E17AE008485B0 /* ResearchKit.framework */,
+				0B0087352F6E17AE008485B0 /* ResearchKitActiveTask.framework */,
+				0B0087362F6E17AE008485B0 /* ResearchKitTests.xctest */,
+				0B0087372F6E17AE008485B0 /* ResearchKitUI.framework */,
 				51F6343923D2877B00FE576E /* HealthKit.framework */,
 			);
 			name = Frameworks;
@@ -803,6 +835,7 @@
 				51431FA223D166AE006A7CFD /* Embed Frameworks */,
 				91AD924C24A4C42E00925D4D /* Embed Watch Content */,
 				9169381E271B6E2100A634ED /* SwiftLint */,
+				0B00873F2F6E17AE008485B0 /* Embed PlugIns */,
 			);
 			buildRules = (
 			);
