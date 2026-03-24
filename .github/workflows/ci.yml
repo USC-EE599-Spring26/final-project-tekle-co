@@ -35,6 +35,10 @@ jobs:
     name: ${{ matrix.scheme }} Unit Tests
     steps:
     - uses: actions/checkout@v6
+
+    - name: Update submodules
+      run: git submodule update --init --recursive
+
     - name: Install SwiftLint
       run: brew install swiftlint
     - name: Build-Test

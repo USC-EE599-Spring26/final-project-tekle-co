@@ -38,9 +38,11 @@ import os.log
 import SwiftUI
 import UIKit
 
+import ResearchKit
+import ResearchKitSwiftUI
+
 @MainActor
 final class CareViewController: OCKDailyPageViewController, @unchecked Sendable {
-
 	private var isSyncing = false
 	private var isLoading = false
     private var style: Styler {
@@ -179,7 +181,7 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
         }
         #endif
 
-        // fetchAndDisplayTasks(on: listViewController, for: date)
+        fetchAndDisplayTasks(on: listViewController, for: date)
     }
 
     private func isSameDay(as date: Date) -> Bool {
@@ -339,6 +341,7 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
             #endif
 
         default:
+
             let card = EventQueryView<SimpleTaskView>(
                     query: query
                 )
@@ -374,6 +377,36 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
             }
         }
 		self.isLoading = false
+    }
+
+    private func researchSurveyViewController(
+        query: OCKEventQuery,
+        task: OCKTask
+    ) -> UIViewController? {
+        guard let steps = task.surveySteps else {
+            return nil
+        }
+        let surveyViewController = EventQueryContentView<ResearchSurveyView>(
+            query: query
+        ) {
+            EventQueryContentView<ResearchCareForm>(
+                query: query
+            ) {
+                ForEach(steps) { step in
+                    ResearchFormStep(
+                        title: task.title,
+                        subtitle: task.instructions
+                    ) {
+                        ForEach(step.questions) { question in
+                            question.view()
+                        }
+                    }
+                }
+            }
+        }
+        .padding(.vertical, 15)
+        .formattedHostingController()
+        return surveyViewController
     }
 }
 
