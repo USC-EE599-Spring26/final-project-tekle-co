@@ -31,9 +31,7 @@
 import CareKit
 import CareKitEssentials
 import CareKitStore
-#if os(iOS)
 import CareKitUI
-#endif
 import os.log
 import ResearchKitSwiftUI
 import SwiftUI
@@ -497,11 +495,9 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
                 on: date
             )
             cards?.forEach {
-                #if os(iOS)
                 if let carekitView = $0.view as? OCKView {
                     carekitView.customStyle = style
                 }
-                #endif
                 $0.view.isUserInteractionEnabled = isCurrentDay
                 $0.view.alpha = !isCurrentDay ? 0.4 : 1.0
             }
