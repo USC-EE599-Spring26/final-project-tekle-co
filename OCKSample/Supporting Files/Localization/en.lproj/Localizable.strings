@@ -106,6 +106,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 "QUALITY_OF_LIFE_STRESS_DETAIL" = "0 is no stress, 10 is extremely high stress.";
 "ANSWER_YES" = "Yes";
 "ANSWER_NO" = "No";
+"CHECK_IN_TITLE" = "Daily Check-In";
+"CHECK_IN_ENERGY" = "How is your energy level today?";
+"CHECK_IN_LOW" = "Low";
+"CHECK_IN_MEDIUM" = "Medium";
+"CHECK_IN_HIGH" = "High";
+"CHECK_IN_PAIN" = "How would you rate your pain right now?";
+"CHECK_IN_PAIN_DETAIL" = "0 is no pain, 10 is severe pain.";
+"RANGE_OF_MOTION_TITLE" = "Range of Motion";
+"RANGE_OF_MOTION_INSTRUCTIONS" = "Complete your shoulder and neck range of motion routine. Move slowly and stop if you feel pain.";
+"RANGE_OF_MOTION_SCHEDULE_TEXT" = "Morning mobility routine";
+"RANGE_OF_MOTION_BADGE" = "Range of Motion";
+"CUSTOM_CARD_BADGE" = "Custom Card";
+"START_RANGE_OF_MOTION" = "Start Range of Motion";
 
 // MARK: ResearchKit SwiftUI
 "BUTTON_CANCEL" = "Cancel";

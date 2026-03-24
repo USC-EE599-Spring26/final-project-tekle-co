@@ -42,8 +42,14 @@ import UIKit
 @MainActor
 final class CareViewController: OCKDailyPageViewController, @unchecked Sendable {
 
+    private enum CheckInPopupKey {
+        static let hasShown = "CareViewController.hasShownCheckInPopup"
+        static let lastShownDay = "CareViewController.lastShownCheckInDay"
+    }
+
     private var isSyncing = false
     private var isLoading = false
+    private var didPresentCheckInOnLaunch = false
     private let swiftUIPadding: CGFloat = 15
     private var style: Styler {
         CustomStylerKey.defaultValue
@@ -82,6 +88,11 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
             name: Notification.Name(rawValue: Constants.shouldRefreshView),
             object: nil
         )
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        presentCheckInSurveyIfNeeded()
     }
 
     @objc private func updateSynchronizationProgress(
@@ -374,6 +385,95 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
         .formattedHostingController()
 
         return surveyViewController
+    }
+    
+    private func presentCheckInSurveyIfNeeded() {
+        guard !didPresentCheckInOnLaunch else { return }
+        guard presentedViewController == nil else { return }
+        guard shouldPresentCheckInToday() else {
+            return
+        }
+        
+        let now = Date()
+        Task { @MainActor in
+            var query = OCKTaskQuery(for: now)
+            query.ids = [TaskID.checkIn]
+            do {
+                let tasks = try await store.fetchAnyTasks(query: query)
+                guard let checkInTask = tasks.first as? OCKTask else {
+                    return
+                }
+                guard let steps = checkInTask.surveySteps else {
+                    return
+                }
+                didPresentCheckInOnLaunch = true
+                markCheckInPresentedForToday()
+                presentCheckInSurveyModal(task: checkInTask, steps: steps)
+            } catch {
+                Logger.feed.error("Could not fetch check-in task: \(error, privacy: .public)")
+            }
+        }
+    }
+    
+    private func presentCheckInSurveyModal(task: OCKTask, steps: [SurveyStep]) {
+        let questions = steps.flatMap(\.questions)
+        let modalContent = ScrollView {
+            VStack(alignment: .leading, spacing: 12) {
+                ForEach(Array(questions.enumerated()), id: \.element.id) { index, question in
+                    Text("Question \(index + 1) of \(questions.count)")
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 6)
+                    question.view()
+                }
+            }
+            .padding(16)
+        }
+        
+        let host = UIHostingController(rootView: modalContent)
+        host.view.backgroundColor = .systemBackground
+        host.title = task.title ?? String(localized: "CHECK_IN_TITLE")
+        host.navigationItem.largeTitleDisplayMode = .never
+        host.navigationItem.rightBarButtonItem = UIBarButtonItem(
+            barButtonSystemItem: .done,
+            target: self,
+            action: #selector(dismissPresentedSurvey)
+        )
+        let nav = UINavigationController(rootViewController: host)
+        nav.modalPresentationStyle = .pageSheet
+        if let sheet = nav.sheetPresentationController {
+            sheet.detents = [
+                UISheetPresentationController.Detent.medium(),
+                UISheetPresentationController.Detent.large()
+            ]
+            sheet.prefersGrabberVisible = true
+            sheet.preferredCornerRadius = 24
+            sheet.prefersScrollingExpandsWhenScrolledToEdge = false
+        }
+        present(nav, animated: true)
+    }
+    
+    @objc private func dismissPresentedSurvey() {
+        dismiss(animated: true)
+    }
+    
+    private func shouldPresentCheckInToday() -> Bool {
+        let defaults = UserDefaults.standard
+        let todayStart = Calendar.current.startOfDay(for: Date()).timeIntervalSince1970
+        let lastShownDay = defaults.double(forKey: CheckInPopupKey.lastShownDay)
+        
+        guard lastShownDay > 0 else {
+            // Backward compatibility: if older "hasShown" flag exists, treat as shown for today only.
+            return !defaults.bool(forKey: CheckInPopupKey.hasShown)
+        }
+        return lastShownDay < todayStart
+    }
+    
+    private func markCheckInPresentedForToday() {
+        let defaults = UserDefaults.standard
+        let todayStart = Calendar.current.startOfDay(for: Date()).timeIntervalSince1970
+        defaults.set(todayStart, forKey: CheckInPopupKey.lastShownDay)
+        defaults.removeObject(forKey: CheckInPopupKey.hasShown)
     }
 
     private func appendTasks(

@@ -123,7 +123,7 @@ extension OCKStore {
         )
         kegels.impactsAdherence = true
         kegels.instructions = String(localized: "KEGEL_INSTRUCTIONS")
-        kegels.card = .custom
+        kegels.card = .simple
         kegels.priority = 3
         
         let stretchElement = OCKScheduleElement(
@@ -144,13 +144,18 @@ extension OCKStore {
         stretch.asset = "figure.flexibility"
         stretch.setCardMetadata(.simple, priority: 4)
         
+        let rangeOfMotion = createRangeOfMotionTask(carePlanUUID: nil)
+        
+        let checkIn = createCheckInSurveyTask(carePlanUUID: nil)
         let qualityOfLife = createQualityOfLifeSurveyTask(carePlanUUID: nil)
         
         _ = try await addTasksIfNotPresent(
             [
+                checkIn,
                 nausea,
                 doxylamine,
                 kegels,
+                rangeOfMotion,
                 stretch,
                 qualityOfLife
             ]
@@ -271,6 +276,97 @@ extension OCKStore {
         qualityOfLife.surveySteps = [stepOne]
         
         return qualityOfLife
+    }
+    
+    func createCheckInSurveyTask(carePlanUUID: UUID?) -> OCKTask {
+        let checkInTaskId = TaskID.checkIn
+        let thisMorning = Calendar.current.startOfDay(for: Date())
+        let aFewDaysAgo = Calendar.current.date(byAdding: .day, value: -4, to: thisMorning)!
+        let beforeBreakfast = Calendar.current.date(byAdding: .hour, value: 8, to: aFewDaysAgo)!
+        let checkInElement = OCKScheduleElement(
+            start: beforeBreakfast,
+            end: nil,
+            interval: DateComponents(day: 1)
+        )
+        let checkInSchedule = OCKSchedule(composing: [checkInElement])
+        
+        let textChoiceLow = String(localized: "CHECK_IN_LOW")
+        let textChoiceMedium = String(localized: "CHECK_IN_MEDIUM")
+        let textChoiceHigh = String(localized: "CHECK_IN_HIGH")
+        let choices: [TextChoice] = [
+            .init(id: "\(checkInTaskId)_0", choiceText: textChoiceLow, value: "Low"),
+            .init(id: "\(checkInTaskId)_1", choiceText: textChoiceMedium, value: "Medium"),
+            .init(id: "\(checkInTaskId)_2", choiceText: textChoiceHigh, value: "High")
+        ]
+        
+        let questionOne = SurveyQuestion(
+            id: "\(checkInTaskId)-energy",
+            type: .multipleChoice,
+            required: true,
+            title: String(localized: "CHECK_IN_ENERGY"),
+            textChoices: choices,
+            choiceSelectionLimit: .single
+        )
+        let questionTwo = SurveyQuestion(
+            id: "\(checkInTaskId)-pain",
+            type: .slider,
+            required: false,
+            title: String(localized: "CHECK_IN_PAIN"),
+            detail: String(localized: "CHECK_IN_PAIN_DETAIL"),
+            integerRange: 0...10,
+            sliderStepValue: 1
+        )
+        let stepOne = SurveyStep(
+            id: "\(checkInTaskId)-step-1",
+            questions: [questionOne, questionTwo]
+        )
+        
+        var checkIn = OCKTask(
+            id: checkInTaskId,
+            title: String(localized: "CHECK_IN_TITLE"),
+            carePlanUUID: carePlanUUID,
+            schedule: checkInSchedule
+        )
+        checkIn.impactsAdherence = true
+        checkIn.asset = "list.bullet.clipboard"
+        checkIn.instructions = String(localized: "CHECK_IN_PAIN_DETAIL")
+        checkIn.card = .survey
+        checkIn.priority = 0
+        checkIn.surveySteps = [stepOne]
+        
+        return checkIn
+    }
+    
+    func createRangeOfMotionTask(carePlanUUID: UUID?) -> OCKTask {
+        let rangeTaskId = TaskID.rangeOfMotion
+        let thisMorning = Calendar.current.startOfDay(for: Date())
+        let aFewDaysAgo = Calendar.current.date(byAdding: .day, value: -4, to: thisMorning)!
+        let morningSession = Calendar.current.date(byAdding: .hour, value: 9, to: aFewDaysAgo)!
+        
+        let rangeSchedule = OCKSchedule(
+            composing: [
+                OCKScheduleElement(
+                    start: morningSession,
+                    end: nil,
+                    interval: DateComponents(day: 1),
+                    text: String(localized: "RANGE_OF_MOTION_SCHEDULE_TEXT")
+                )
+            ]
+        )
+        
+        var rangeOfMotion = OCKTask(
+            id: rangeTaskId,
+            title: String(localized: "RANGE_OF_MOTION_TITLE"),
+            carePlanUUID: carePlanUUID,
+            schedule: rangeSchedule
+        )
+        rangeOfMotion.impactsAdherence = true
+        rangeOfMotion.instructions = String(localized: "RANGE_OF_MOTION_INSTRUCTIONS")
+        rangeOfMotion.asset = "figure.strengthtraining.functional"
+        rangeOfMotion.card = .custom
+        rangeOfMotion.priority = 4
+        
+        return rangeOfMotion
     }
 }
 

@@ -18,6 +18,8 @@ extension OCKTask: CareTask {
     var card: CareKitCard {
         get {
             switch id {
+            case TaskID.checkIn:
+                return .survey
             case TaskID.qualityOfLife:
                 return .survey
             case TaskID.doxylamine:
@@ -25,6 +27,8 @@ extension OCKTask: CareTask {
             case TaskID.nausea:
                 return .button
             case TaskID.kegels:
+                return .simple
+            case TaskID.rangeOfMotion:
                 return .custom
             case TaskID.stretch:
                 return .simple
@@ -49,16 +53,20 @@ extension OCKTask: CareTask {
             guard let value = userInfo?[CareTaskUserInfoKey.priority],
                   let priority = Int(value) else {
                 switch id {
+                case TaskID.checkIn:
+                    return 0
                 case TaskID.qualityOfLife:
                     return 1
                 case TaskID.doxylamine:
                     return 2
                 case TaskID.kegels:
                     return 3
-                case TaskID.stretch:
+                case TaskID.rangeOfMotion:
                     return 4
-                case TaskID.nausea:
+                case TaskID.stretch:
                     return 5
+                case TaskID.nausea:
+                    return 6
                 default:
                     return 100
                 }

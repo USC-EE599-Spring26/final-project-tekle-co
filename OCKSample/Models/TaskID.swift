@@ -17,6 +17,8 @@ enum TaskID {
     static let ovulationTestResult = "ovulationTestResult"
     static let cognitiveLapseLogger = "cognitiveLapseLogger"
     static let qualityOfLife = "qualityOfLife"
+    static let checkIn = "checkIn"
+    static let rangeOfMotion = "rangeOfMotion"
 
     static let medication = "medication"
     static let moodHourly = "moodHourly"
@@ -30,7 +32,7 @@ enum TaskID {
     }
 
     static var orderedSubjective: [String] {
-        [ Self.doxylamine, Self.kegels, Self.stretch, Self.nausea, Self.medication, Self.cognitiveLapseLogger ]
+        [ Self.doxylamine, Self.kegels, Self.rangeOfMotion, Self.stretch, Self.nausea, Self.medication, Self.cognitiveLapseLogger ]
     }
 
     static var orderedWatchOS: [String] {

@@ -25,7 +25,7 @@ struct MyCustomCardView: CareKitEssentialView {
         CardView {
             VStack(alignment: .leading) {
                 HStack {
-                    Label("Custom Card", systemImage: "sparkles.rectangle.stack.fill")
+                    Label(badgeTitle, systemImage: badgeIconName)
                         .font(.caption.weight(.semibold))
                         .padding(.horizontal, 10)
                         .padding(.vertical, 6)
@@ -85,11 +85,26 @@ struct MyCustomCardView: CareKitEssentialView {
     }
 
     private var buttonText: LocalizedStringKey {
-        isComplete ? "COMPLETED" : "START_SURVEY"
+        if isComplete {
+            return "COMPLETED"
+        }
+        return isRangeOfMotionTask ? "START_RANGE_OF_MOTION" : "START_SURVEY"
     }
 
     private var foregroundColor: Color {
         isComplete ? .accentColor : .white
+    }
+    
+    private var isRangeOfMotionTask: Bool {
+        event.task.id == TaskID.rangeOfMotion
+    }
+    
+    private var badgeTitle: LocalizedStringKey {
+        isRangeOfMotionTask ? "RANGE_OF_MOTION_BADGE" : "CUSTOM_CARD_BADGE"
+    }
+    
+    private var badgeIconName: String {
+        isRangeOfMotionTask ? "figure.strengthtraining.functional" : "sparkles.rectangle.stack.fill"
     }
 
     private func toggleEventCompletion() {
