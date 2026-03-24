@@ -137,7 +137,7 @@ class Utility {
                 try? await store.populateDefaultCarePlansTasksContacts(
 					startDate: startDate
 				)
-				try? await store.populateSampleOutcomes(
+                try? await store.populateSampleOutcomes(
 					startDate: startDate
 				)
             }
