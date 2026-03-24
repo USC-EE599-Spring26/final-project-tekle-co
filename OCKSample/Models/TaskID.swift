@@ -32,7 +32,15 @@ enum TaskID {
     }
 
     static var orderedSubjective: [String] {
-        [ Self.doxylamine, Self.kegels, Self.rangeOfMotion, Self.stretch, Self.nausea, Self.medication, Self.cognitiveLapseLogger ]
+        [
+            Self.doxylamine,
+            Self.kegels,
+            Self.rangeOfMotion,
+            Self.stretch,
+            Self.nausea,
+            Self.medication,
+            Self.cognitiveLapseLogger
+        ]
     }
 
     static var orderedWatchOS: [String] {
