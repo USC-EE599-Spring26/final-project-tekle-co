@@ -75,6 +75,27 @@ class LoginViewModel: ObservableObject {
     private func finishCompletingSignIn(
 		_ careKitPatient: OCKPatient? = nil
 	) async throws {
+        // Ensure baseline tasks exist for returning users as well.
+        // addTasksIfNotPresent / addContactsIfNotPresent keep this idempotent.
+        if let appDelegate = AppDelegateKey.defaultValue {
+            do {
+                let currentDate = Date()
+                let startDate = daysInThePastToGenerateSampleData < 0 ? Calendar.current.date(
+                    byAdding: .day,
+                    value: daysInThePastToGenerateSampleData,
+                    to: currentDate
+                )! : currentDate
+                try await appDelegate.store.populateDefaultCarePlansTasksContacts(
+                    startDate: startDate
+                )
+                try await appDelegate.healthKitStore.populateDefaultHealthKitTasks(
+                    startDate: startDate
+                )
+            } catch {
+                Logger.login.error("Could not ensure default tasks on sign in: \(error)")
+            }
+        }
+        
         if let careKitUser = careKitPatient {
             var user = try await User.current()
             guard let userType = careKitUser.userType,
