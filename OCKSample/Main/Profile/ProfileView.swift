@@ -6,87 +6,113 @@
 //  Copyright © 2020 Network Reconnaissance Lab. All rights reserved.
 //
 
-import CareKitUI
-import CareKitStore
 import CareKit
-import os.log
+import CareKitStore
+import CareKitEssentials
+import HealthKit
 import SwiftUI
+import os.log
 
 struct ProfileView: View {
 
     @CareStoreFetchRequest(query: query()) private var patients
     @StateObject private var viewModel = ProfileViewModel()
     @ObservedObject var loginViewModel: LoginViewModel
+    @State private var showingAddTask = false
+    @State private var showingManageTasks = false
+    @State private var showingAddHealthKitTask = false
 
     var body: some View {
-        VStack {
-            VStack(alignment: .leading) {
-                TextField(
-                    "GIVEN_NAME",
-                    text: $viewModel.firstName
-                )
-                .padding()
-                .cornerRadius(20.0)
-                .shadow(radius: 10.0, x: 20, y: 10)
+        NavigationView {
+            VStack {
+                VStack(alignment: .leading) {
+                    TextField("GIVEN_NAME", text: $viewModel.firstName)
+                        .padding()
+                        .cornerRadius(20.0)
+                        .shadow(radius: 10.0, x: 20, y: 10)
 
-                TextField(
-                    "FAMILY_NAME",
-                    text: $viewModel.lastName
-                )
-                .padding()
-                .cornerRadius(20.0)
-                .shadow(radius: 10.0, x: 20, y: 10)
+                    TextField("FAMILY_NAME", text: $viewModel.lastName)
+                        .padding()
+                        .cornerRadius(20.0)
+                        .shadow(radius: 10.0, x: 20, y: 10)
 
-                DatePicker(
-                    "BIRTHDAY",
-                    selection: $viewModel.birthday,
-                    displayedComponents: [DatePickerComponents.date]
-                )
-                .padding()
-                .cornerRadius(20.0)
-                .shadow(radius: 10.0, x: 20, y: 10)
+                    DatePicker(
+                        "BIRTHDAY",
+                        selection: $viewModel.birthday,
+                        displayedComponents: [.date]
+                    )
+                    .padding()
+                    .cornerRadius(20.0)
+                    .shadow(radius: 10.0, x: 20, y: 10)
+                }
+
+                Button(action: {
+                    Task {
+                        do {
+                            try await viewModel.saveProfile()
+                        } catch {
+                            Logger.profile.error("Error saving profile: \(error)")
+                        }
+                    }
+                }) {
+                    Text("SAVE_PROFILE")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .padding()
+                        .frame(width: 300, height: 50)
+                }
+                .background(Color(.green))
+                .cornerRadius(15)
+
+                Button(action: {
+                    Task {
+                        await loginViewModel.logout()
+                    }
+                }) {
+                    Text("LOG_OUT")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .padding()
+                        .frame(width: 300, height: 50)
+                }
+                .background(Color(.red))
+                .cornerRadius(15)
             }
+            .onReceive(patients.publisher) { publishedPatient in
+                viewModel.updatePatient(publishedPatient.result)
+            }
+            .navigationTitle("Profile")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    HStack {
+                        Button {
+                            showingManageTasks = true
+                        } label: {
+                            Image(systemName: "trash")
+                        }
 
-            Button(action: {
-                Task {
-                    do {
-                        try await viewModel.saveProfile()
-                    } catch {
-                        Logger.profile.error("Error saving profile: \(error)")
+                        Menu {
+                            Button("Add Task") {
+                                showingAddTask = true
+                            }
+                            Button("Add HealthKit Task") {
+                                showingAddHealthKitTask = true
+                            }
+                        } label: {
+                            Image(systemName: "plus")
+                        }
                     }
                 }
-            }, label: {
-                Text(
-                    "SAVE_PROFILE"
-                )
-                .font(.headline)
-                .foregroundColor(.white)
-                .padding()
-                .frame(width: 300, height: 50)
-            })
-            .background(Color(.green))
-            .cornerRadius(15)
-
-            // Notice that "action" is a closure (which is essentially
-            // a function as argument like we discussed in class)
-            Button(action: {
-                Task {
-                    await loginViewModel.logout()
-                }
-            }, label: {
-                Text(
-                    "LOG_OUT"
-                )
-                .font(.headline)
-                .foregroundColor(.white)
-                .padding()
-                .frame(width: 300, height: 50)
-            })
-            .background(Color(.red))
-            .cornerRadius(15)
-        }
-        .onReceive(patients.publisher) { publishedPatient in
-            viewModel.updatePatient(publishedPatient.result)
+            }
+            .sheet(isPresented: $showingManageTasks) {
+                ManageTasksView(viewModel: viewModel)
+            }
+            .sheet(isPresented: $showingAddTask) {
+                AddTaskView(viewModel: viewModel)
+            }
+            .sheet(isPresented: $showingAddHealthKitTask) {
+                AddHealthKitTaskView(viewModel: viewModel)
+            }
         }
     }
 

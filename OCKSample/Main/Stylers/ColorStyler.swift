@@ -18,5 +18,14 @@ struct ColorStyler: OCKColorStyler {
     var tertiaryLabel: UIColor {
 		UIColor(Color.accentColor)
     }
+    var tint: UIColor {
+        UIColor.systemTeal
+    }
+    var secondaryLabel: UIColor {
+        UIColor.systemGray
+    }
+    var customBackground: UIColor {
+        UIColor.systemGroupedBackground
+    }
     #endif
 }
