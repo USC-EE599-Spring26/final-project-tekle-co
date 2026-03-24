@@ -186,6 +186,9 @@
 		E7440E4F229477F7007AD30A /* CareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7440E4E229477F7007AD30A /* CareViewController.swift */; };
 		E7C37849228F887800E982D8 /* TipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7C37848228F887800E982D8 /* TipView.swift */; };
 		E7C4CA0B22809AD500ECC3D7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E7C4CA0A22809AD500ECC3D7 /* Assets.xcassets */; };
+		707D298F2DCBE5E500980254 /* ResearchKitSwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A89D8CE72F727B5A00F94C6C /* ResearchKitSwiftUI.framework */; platformFilters = (xros, ); };
+		707D29902DCBE5E500980255 /* MyCustomCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9B000012F73000100ABC001 /* MyCustomCardView.swift */; };
+		707D29912DCBE5E500980256 /* CardEnabledEnvironmentKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9B000032F73000100ABC001 /* CardEnabledEnvironmentKey.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -390,6 +393,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				707D298F2DCBE5E500980254 /* ResearchKitSwiftUI.framework in Frameworks */,
 				707D29762DCBE89600980253 /* ParseCareKit in Frameworks */,
 				707D292D2DCBE5E500980253 /* RealityKitContent in Frameworks */,
 			);
@@ -1146,6 +1150,8 @@
 				A89D8D4C2F728B5600F94C6C /* SurveyModels.swift in Sources */,
 				A8C2D8F92F59A9BA006B971F /* ManageTasksView.swift in Sources */,
 				707D296E2DCBE68500980253 /* ColorStyler.swift in Sources */,
+				707D29902DCBE5E500980255 /* MyCustomCardView.swift in Sources */,
+				707D29912DCBE5E500980256 /* CardEnabledEnvironmentKey.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
