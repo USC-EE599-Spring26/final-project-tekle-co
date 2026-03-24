@@ -31,7 +31,9 @@
 import CareKit
 import CareKitEssentials
 import CareKitStore
+#if os(iOS)
 import CareKitUI
+#endif
 import os.log
 import ResearchKitSwiftUI
 import SwiftUI
@@ -257,22 +259,27 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
             switch standardTask.card {
 
             case .button:
-                // This is a UIKit based card.
+                #if os(iOS)
+                // UIKit CareKit cards are not available on visionOS in this target.
                 let card = OCKButtonLogTaskViewController(
                     query: query,
                     store: self.store
                 )
-
                 return [card]
+                #else
+                return nil
+                #endif
 
             case .checklist:
-                // This is a UIKit based card.
+                #if os(iOS)
                 let card = OCKChecklistTaskViewController(
                     query: query,
                     store: self.store
                 )
-
                 return [card]
+                #else
+                return nil
+                #endif
 
             case .featured:
                 // Can be implememented based off of midterm.
@@ -441,6 +448,7 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
         )
         let nav = UINavigationController(rootViewController: host)
         nav.modalPresentationStyle = .pageSheet
+        #if os(iOS)
         if let sheet = nav.sheetPresentationController {
             sheet.detents = [
                 UISheetPresentationController.Detent.medium(),
@@ -450,6 +458,7 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
             sheet.preferredCornerRadius = 24
             sheet.prefersScrollingExpandsWhenScrolledToEdge = false
         }
+        #endif
         present(nav, animated: true)
     }
     
@@ -488,9 +497,11 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
                 on: date
             )
             cards?.forEach {
+                #if os(iOS)
                 if let carekitView = $0.view as? OCKView {
                     carekitView.customStyle = style
                 }
+                #endif
                 $0.view.isUserInteractionEnabled = isCurrentDay
                 $0.view.alpha = !isCurrentDay ? 0.4 : 1.0
             }
