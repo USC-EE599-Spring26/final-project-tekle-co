@@ -179,7 +179,7 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
         }
         #endif
 
-        // fetchAndDisplayTasks(on: listViewController, for: date)
+        fetchAndDisplayTasks(on: listViewController, for: date)
     }
 
     private func isSameDay(as date: Date) -> Bool {
