@@ -116,7 +116,6 @@
 		70E342302DB062F8005124F9 /* NoHighlightStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70E3422E2DB06281005124F9 /* NoHighlightStyle.swift */; };
 		70F03A952786093B00E5AFB4 /* OCKHealthKitPassthroughStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F03A942786093B00E5AFB4 /* OCKHealthKitPassthroughStore.swift */; };
 		70F03A972786098F00E5AFB4 /* OCKStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F03A962786098F00E5AFB4 /* OCKStore.swift */; };
-		70F03A9C27860A2000E5AFB4 /* OCKStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F03A962786098F00E5AFB4 /* OCKStore.swift */; };
 		70F03AA327860AFF00E5AFB4 /* OCKPatient+Parse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F03AA227860AFF00E5AFB4 /* OCKPatient+Parse.swift */; };
 		70F03AA627860B2500E5AFB4 /* OCKPatient+Parse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F03AA227860AFF00E5AFB4 /* OCKPatient+Parse.swift */; };
 		70F03AA827860E7700E5AFB4 /* FontColorKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F03AA727860E7700E5AFB4 /* FontColorKey.swift */; };
@@ -156,6 +155,17 @@
 		91AD924624A4C42E00925D4D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 91AD924524A4C42E00925D4D /* Preview Assets.xcassets */; };
 		91AD924B24A4C42E00925D4D /* OCKWatchSample.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 91AD922724A4C42B00925D4D /* OCKWatchSample.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		A89D8CDD2F7276C600F94C6C /* ResearchKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A88731AC2F727376007B1EE2 /* ResearchKit.framework */; platformFilter = ios; };
+		A89D8CEA2F727B8E00F94C6C /* ResearchKitSwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A89D8CE72F727B5A00F94C6C /* ResearchKitSwiftUI.framework */; platformFilters = (ios, xros, ); };
+		A89D8CEE2F727CE800F94C6C /* CareKitCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89D8CED2F727CD200F94C6C /* CareKitCard.swift */; };
+		A89D8CEF2F727CE800F94C6C /* CareKitCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89D8CED2F727CD200F94C6C /* CareKitCard.swift */; };
+		A89D8CF02F727CE800F94C6C /* CareKitCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89D8CED2F727CD200F94C6C /* CareKitCard.swift */; };
+		A89D8CF12F72846700F94C6C /* ResearchKitUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A88731B02F727376007B1EE2 /* ResearchKitUI.framework */; platformFilter = ios; };
+		A89D8D482F728B4C00F94C6C /* CareTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89D8D462F728B4C00F94C6C /* CareTask.swift */; };
+		A89D8D492F728B4C00F94C6C /* CareTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89D8D462F728B4C00F94C6C /* CareTask.swift */; };
+		A89D8D4C2F728B5600F94C6C /* SurveyModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89D8D4A2F728B5600F94C6C /* SurveyModels.swift */; };
+		A89D8D4D2F728B5600F94C6C /* SurveyModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89D8D4A2F728B5600F94C6C /* SurveyModels.swift */; };
+		A89D8D502F728B5E00F94C6C /* OCKTask+CareMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89D8D4E2F728B5E00F94C6C /* OCKTask+CareMetadata.swift */; };
+		A89D8D512F728B5E00F94C6C /* OCKTask+CareMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89D8D4E2F728B5E00F94C6C /* OCKTask+CareMetadata.swift */; };
 		A8C2D8EA2F598A17006B971F /* DimensionStyler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C2D8E92F598A17006B971F /* DimensionStyler.swift */; };
 		A8C2D8EB2F598A17006B971F /* DimensionStyler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C2D8E92F598A17006B971F /* DimensionStyler.swift */; };
 		A8C2D8EC2F598A17006B971F /* DimensionStyler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C2D8E92F598A17006B971F /* DimensionStyler.swift */; };
@@ -191,13 +201,6 @@
 			remoteGlobalIDString = 707D29272DCBE5E500980253;
 			remoteInfo = OCKVisionSample;
 		};
-		91AD924924A4C42E00925D4D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E72B2BFE226939E3009A9438 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 91AD922624A4C42B00925D4D;
-			remoteInfo = OCKWatchSample;
-		};
 		A88731AB2F727376007B1EE2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A88731912F727376007B1EE2 /* ResearchKit.xcodeproj */;
@@ -225,6 +228,20 @@
 			proxyType = 2;
 			remoteGlobalIDString = CAD08967289DD747007B2A98;
 			remoteInfo = ResearchKitActiveTask;
+		};
+		A89D8CE62F727B5A00F94C6C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A89D8CDF2F727B5A00F94C6C /* ResearchKitSwiftUI.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0BF86B1D2B4F360000E3790E;
+			remoteInfo = ResearchKitSwiftUI;
+		};
+		A89D8CE82F727B5A00F94C6C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A89D8CDF2F727B5A00F94C6C /* ResearchKitSwiftUI.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 38DB82DF2C753A8B0074B95D;
+			remoteInfo = ResearchKitSwiftUITests;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -318,6 +335,11 @@
 		91AD924724A4C42E00925D4D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		91AD924824A4C42E00925D4D /* PushNotificationPayload.apns */ = {isa = PBXFileReference; lastKnownFileType = text; path = PushNotificationPayload.apns; sourceTree = "<group>"; };
 		A88731912F727376007B1EE2 /* ResearchKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ResearchKit.xcodeproj; path = ResearchKit/ResearchKit.xcodeproj; sourceTree = "<group>"; };
+		A89D8CDF2F727B5A00F94C6C /* ResearchKitSwiftUI.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ResearchKitSwiftUI.xcodeproj; path = ResearchKit/ResearchKitSwiftUI/ResearchKitSwiftUI.xcodeproj; sourceTree = "<group>"; };
+		A89D8CED2F727CD200F94C6C /* CareKitCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CareKitCard.swift; sourceTree = "<group>"; };
+		A89D8D462F728B4C00F94C6C /* CareTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CareTask.swift; sourceTree = "<group>"; };
+		A89D8D4A2F728B5600F94C6C /* SurveyModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurveyModels.swift; sourceTree = "<group>"; };
+		A89D8D4E2F728B5E00F94C6C /* OCKTask+CareMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OCKTask+CareMetadata.swift"; sourceTree = "<group>"; };
 		A8C2D8E92F598A17006B971F /* DimensionStyler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DimensionStyler.swift; sourceTree = "<group>"; };
 		A8C2D8ED2F598A4A006B971F /* AnimationStyler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationStyler.swift; sourceTree = "<group>"; };
 		A8C2D8F12F598A65006B971F /* AppearanceStyler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceStyler.swift; sourceTree = "<group>"; };
@@ -352,6 +374,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A89D8CEA2F727B8E00F94C6C /* ResearchKitSwiftUI.framework in Frameworks */,
+				A89D8CF12F72846700F94C6C /* ResearchKitUI.framework in Frameworks */,
 				918FDEAF271B3F8F0045A0EF /* ParseCareKit in Frameworks */,
 				708542F9276687F90029E888 /* HealthKit.framework in Frameworks */,
 				A89D8CDD2F7276C600F94C6C /* ResearchKit.framework in Frameworks */,
@@ -609,6 +633,9 @@
 		918FDEB3271B402F0045A0EF /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				A89D8D4A2F728B5600F94C6C /* SurveyModels.swift */,
+				A89D8D462F728B4C00F94C6C /* CareTask.swift */,
+				A89D8CED2F727CD200F94C6C /* CareKitCard.swift */,
 				7099D1FE29E98D900037CD8E /* AppError.swift */,
 				7099D20A29E98E400037CD8E /* InstallationChannel.swift */,
 				7099D20429E98DFF0037CD8E /* TaskID.swift */,
@@ -621,6 +648,7 @@
 		918FDEBA271B4DF60045A0EF /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				A89D8D4E2F728B5E00F94C6C /* OCKTask+CareMetadata.swift */,
 				70221F2928D7BE0600971195 /* AppDelegate+ParseRemoteDelegate.swift */,
 				70221F3328D8ABBE00971195 /* AppDelegate+UIApplicationDelegate.swift */,
 				918FDEB6271B41FF0045A0EF /* Logger.swift */,
@@ -691,9 +719,19 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		A89D8CE02F727B5A00F94C6C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A89D8CE72F727B5A00F94C6C /* ResearchKitSwiftUI.framework */,
+				A89D8CE92F727B5A00F94C6C /* ResearchKitSwiftUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		E72B2BFD226939E3009A9438 = {
 			isa = PBXGroup;
 			children = (
+				A89D8CDF2F727B5A00F94C6C /* ResearchKitSwiftUI.xcodeproj */,
 				9169381F271B80EA00A634ED /* CONTRIBUTING.md */,
 				91AD922324A461D200925D4D /* README.md */,
 				0520468223C3C1F2004F0F36 /* OCKSample.xctestplan */,
@@ -833,13 +871,11 @@
 				E72B2C02226939E3009A9438 /* Sources */,
 				E72B2C04226939E3009A9438 /* Resources */,
 				51431FA123D166AE006A7CFD /* Frameworks */,
-				91AD924C24A4C42E00925D4D /* Embed Watch Content */,
 				9169381E271B6E2100A634ED /* SwiftLint */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				91AD924A24A4C42E00925D4D /* PBXTargetDependency */,
 			);
 			name = OCKSample;
 			packageProductDependencies = (
@@ -899,6 +935,10 @@
 					ProductGroup = A88731922F727376007B1EE2 /* Products */;
 					ProjectRef = A88731912F727376007B1EE2 /* ResearchKit.xcodeproj */;
 				},
+				{
+					ProductGroup = A89D8CE02F727B5A00F94C6C /* Products */;
+					ProjectRef = A89D8CDF2F727B5A00F94C6C /* ResearchKitSwiftUI.xcodeproj */;
+				},
 			);
 			projectRoot = "";
 			targets = (
@@ -938,6 +978,20 @@
 			fileType = wrapper.framework;
 			path = ResearchKitActiveTask.framework;
 			remoteRef = A88731B12F727376007B1EE2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A89D8CE72F727B5A00F94C6C /* ResearchKitSwiftUI.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = ResearchKitSwiftUI.framework;
+			remoteRef = A89D8CE62F727B5A00F94C6C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A89D8CE92F727B5A00F94C6C /* ResearchKitSwiftUITests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = ResearchKitSwiftUITests.xctest;
+			remoteRef = A89D8CE82F727B5A00F94C6C /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -1034,6 +1088,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				707D29462DCBE68500980253 /* MainTabView.swift in Sources */,
+				A89D8CEF2F727CE800F94C6C /* CareKitCard.swift in Sources */,
 				A8C2D8F72F599E22006B971F /* AddTaskView.swift in Sources */,
 				707D29472DCBE68500980253 /* User.swift in Sources */,
 				707D29482DCBE68500980253 /* FontColorKey.swift in Sources */,
@@ -1070,6 +1125,7 @@
 				707D29622DCBE68500980253 /* ProfileViewModel.swift in Sources */,
 				707D29632DCBE68500980253 /* AppDelegate+UIApplicationDelegate.swift in Sources */,
 				707D29642DCBE68500980253 /* CareViewController.swift in Sources */,
+				A89D8D482F728B4C00F94C6C /* CareTask.swift in Sources */,
 				707D29652DCBE68500980253 /* PCKUtility.swift in Sources */,
 				A8C2D8F42F598A65006B971F /* AppearanceStyler.swift in Sources */,
 				707D29662DCBE68500980253 /* UserType.swift in Sources */,
@@ -1079,7 +1135,9 @@
 				707D296A2DCBE68500980253 /* Constants.swift in Sources */,
 				707D296B2DCBE68500980253 /* AppDelegate+ParseRemoteDelegate.swift in Sources */,
 				707D296C2DCBE68500980253 /* RemoteSessionDelegate.swift in Sources */,
+				A89D8D512F728B5E00F94C6C /* OCKTask+CareMetadata.swift in Sources */,
 				707D296D2DCBE68500980253 /* OCKPatient+Parse.swift in Sources */,
+				A89D8D4C2F728B5600F94C6C /* SurveyModels.swift in Sources */,
 				A8C2D8F92F59A9BA006B971F /* ManageTasksView.swift in Sources */,
 				707D296E2DCBE68500980253 /* ColorStyler.swift in Sources */,
 			);
@@ -1130,7 +1188,7 @@
 				918FDEB9271B493A0045A0EF /* Installation.swift in Sources */,
 				91AD923F24A4C42D00925D4D /* NotificationController.swift in Sources */,
 				70CF66E528E1E74C00FAE977 /* TintColorFlipKey.swift in Sources */,
-				70F03A9C27860A2000E5AFB4 /* OCKStore.swift in Sources */,
+				A89D8CEE2F727CE800F94C6C /* CareKitCard.swift in Sources */,
 				70C0D474279BA492003DA141 /* Utility.swift in Sources */,
 				A8C2D8F22F598A65006B971F /* AppearanceStyler.swift in Sources */,
 				91AD923D24A4C42D00925D4D /* AppDelegate.swift in Sources */,
@@ -1156,6 +1214,7 @@
 				7099D20529E98DFF0037CD8E /* TaskID.swift in Sources */,
 				7036E4CE256E9A0C006E9A3C /* ContactView.swift in Sources */,
 				70F03A972786098F00E5AFB4 /* OCKStore.swift in Sources */,
+				A89D8D492F728B4C00F94C6C /* CareTask.swift in Sources */,
 				A8C2D8F32F598A65006B971F /* AppearanceStyler.swift in Sources */,
 				70DFD80B2567074500B9DB12 /* LoginView.swift in Sources */,
 				707D28CF2DCA8AAB00980253 /* OCKStore+SampleData.swift in Sources */,
@@ -1167,6 +1226,7 @@
 				9169381D271B650700A634ED /* ColorStyler.swift in Sources */,
 				E72B2C0A226939E3009A9438 /* AppDelegate.swift in Sources */,
 				7036E4C4256E0A48006E9A3C /* CareView.swift in Sources */,
+				A89D8D4D2F728B5600F94C6C /* SurveyModels.swift in Sources */,
 				70F921B027CABED600368CEC /* LocalSyncSessionDelegate.swift in Sources */,
 				A8C2D8EA2F598A17006B971F /* DimensionStyler.swift in Sources */,
 				70221F2828D7809800971195 /* MainTabView.swift in Sources */,
@@ -1186,6 +1246,8 @@
 				70077597252228E900EC0EDA /* User.swift in Sources */,
 				0B7E4EDC2F5A2B65002E86E9 /* AddHealthKitTaskView.swift in Sources */,
 				7036E4C9256E1A6F006E9A3C /* ProfileView.swift in Sources */,
+				A89D8D502F728B5E00F94C6C /* OCKTask+CareMetadata.swift in Sources */,
+				A89D8CF02F727CE800F94C6C /* CareKitCard.swift in Sources */,
 				7083A856279CA40A00B3832E /* PCKUtility.swift in Sources */,
 				70B8E0A52F0EC1CA00440FCA /* Mutex.swift in Sources */,
 				A8C2D8FA2F59A9BA006B971F /* ManageTasksView.swift in Sources */,
@@ -1209,11 +1271,6 @@
 			isa = PBXTargetDependency;
 			target = 707D29272DCBE5E500980253 /* OCKVisionSample */;
 			targetProxy = 707D293A2DCBE5E600980253 /* PBXContainerItemProxy */;
-		};
-		91AD924A24A4C42E00925D4D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 91AD922624A4C42B00925D4D /* OCKWatchSample */;
-			targetProxy = 91AD924924A4C42E00925D4D /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

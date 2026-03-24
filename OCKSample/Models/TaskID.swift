@@ -16,6 +16,7 @@ enum TaskID {
     static let steps = "steps"
     static let ovulationTestResult = "ovulationTestResult"
     static let cognitiveLapseLogger = "cognitiveLapseLogger"
+    static let qualityOfLife = "qualityOfLife"
 
     static let medication = "medication"
     static let moodHourly = "moodHourly"
