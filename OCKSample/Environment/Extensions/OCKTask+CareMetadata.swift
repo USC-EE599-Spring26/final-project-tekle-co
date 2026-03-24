@@ -17,20 +17,24 @@ private enum CareTaskUserInfoKey {
 extension OCKTask: CareTask {
     var card: CareKitCard {
         get {
+            switch id {
+            case TaskID.qualityOfLife:
+                return .survey
+            case TaskID.doxylamine:
+                return .checklist
+            case TaskID.nausea:
+                return .button
+            case TaskID.kegels:
+                return .custom
+            case TaskID.stretch:
+                return .simple
+            default:
+                break
+            }
+
             guard let value = userInfo?[CareTaskUserInfoKey.card],
                   let card = CareKitCard(rawValue: value) else {
-                switch id {
-                case TaskID.qualityOfLife:
-                    return .survey
-                case TaskID.doxylamine:
-                    return .checklist
-                case TaskID.nausea:
-                    return .instruction
-                case TaskID.kegels, TaskID.stretch:
-                    return .simple
-                default:
-                    return .simple
-                }
+                return .simple
             }
             return card
         }
