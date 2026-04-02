@@ -96,7 +96,7 @@ struct MyCustomCardView: CareKitEssentialView {
     }
     
     private var isRangeOfMotionTask: Bool {
-        event.task.id == TaskID.rangeOfMotion
+        event.task.id == RangeOfMotion.identifier()
     }
     
     private var badgeTitle: LocalizedStringKey {

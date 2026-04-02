@@ -2,14 +2,6 @@
 //  CareKitCard.swift
 //  OCKSample
 //
-//  Created by Noah Tekle on 3/24/26.
-//  Copyright © 2026 Network Reconnaissance Lab. All rights reserved.
-//
-
-//
-//  CareKitCard.swift
-//  OCKSample
-//
 //  Created by Corey Baker on 2/26/26.
 //  Copyright © 2026 Network Reconnaissance Lab. All rights reserved.
 //
@@ -28,5 +20,6 @@ enum CareKitCard: String, CaseIterable, Identifiable {
     case numericProgress = "Numeric Progress"
     case simple = "Simple"
     case survey = "Survey"
+    case uiKitSurvey = "UIKitSurvey"
     case custom = "Custom"
 }

@@ -135,6 +135,7 @@ final class AppDelegate: UIResponder, ObservableObject {
 		)
 		sessionDelegate?.store.setValue(store)
         self.store = store
+        UserDefaults.standard.removeObject(forKey: Constants.researchKitOnboardingCompletedKey)
         PCKUtility.removeCache()
     }
 
