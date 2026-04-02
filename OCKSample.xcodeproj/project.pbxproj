@@ -1208,12 +1208,19 @@
 				A89D8D512F728B5E00F94C6C /* OCKTask+CareMetadata.swift in Sources */,
 				707D296D2DCBE68500980253 /* OCKPatient+Parse.swift in Sources */,
 				A89D8D4C2F728B5600F94C6C /* SurveyModels.swift in Sources */,
+				70C2FF952F7340F300F8C6E3 /* Consent.swift in Sources */,
+				70C2FF992F73413200F8C6E3 /* Surveyable.swift in Sources */,
+				70C2FF9F2F73419B00F8C6E3 /* Onboard.swift in Sources */,
+				70C2FFA22F7341BF00F8C6E3 /* RangeOfMotion.swift in Sources */,
+				70C2FF9C2F73415800F8C6E3 /* Survey.swift in Sources */,
 				A8C2D8F92F59A9BA006B971F /* ManageTasksView.swift in Sources */,
 				707D296E2DCBE68500980253 /* ColorStyler.swift in Sources */,
 				707D29902DCBE5E500980255 /* MyCustomCardView.swift in Sources */,
 				707D29912DCBE5E500980256 /* CardEnabledEnvironmentKey.swift in Sources */,
 				70D100042F73490000AB003 /* CarePlanID.swift in Sources */,
 				70D100082F73490000AB007 /* OCKTask+ResearchKitSwiftUI.swift in Sources */,
+				70D1000A2F73490000AB009 /* CareKitTaskView.swift in Sources */,
+				A9B110032F74010000AA003 /* SurveyViewSynchronizer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
