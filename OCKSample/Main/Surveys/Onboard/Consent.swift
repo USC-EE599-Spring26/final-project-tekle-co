@@ -1,12 +1,15 @@
 import Foundation
 
-// swiftlint:disable line_length
-
 /*
  TODO: The informedConsentHTML property allows you to display HTML
  on a ResearchKit survey. Modify the consent so it properly
  represents the use case of your application.
  */
+
+private let consentSigningParagraph = "<p>By signing below, I acknowledge that I have read this consent "
+    + "carefully, that I understand all of its terms, and that I enter into this study voluntarily. "
+    + "I understand that my information will only be used and disclosed for the purposes described "
+    + "in the consent and I can withdraw from the study at any time.</p>"
 
 let informedConsentHTML = """
     <!DOCTYPE html>
@@ -39,10 +42,7 @@ let informedConsentHTML = """
             <li>Must be the only user of the device on which you are participating in the study.</li>
             <li>Must be able to sign your own consent form.</li>
         </ul>
-        <p>By signing below, I acknowledge that I have read this consent carefully, that I understand \
-all of its terms, and that I enter into this study voluntarily. I understand that my information will \
-only be used and disclosed for the purposes described in the consent and I can withdraw from the \
-study at any time.</p>
+        \(consentSigningParagraph)
         <p>Please sign using your finger below.</p>
         <br>
     </body>
