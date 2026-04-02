@@ -18,7 +18,8 @@ enum TaskID {
     static let cognitiveLapseLogger = "cognitiveLapseLogger"
     static let qualityOfLife = "qualityOfLife"
     static let checkIn = "checkIn"
-    static let rangeOfMotion = "rangeOfMotion"
+    /// Matches `RangeOfMotion.identifier()` (UIKit ResearchKit task id from course template).
+    static let rangeOfMotion = "range of motion"
 
     static let medication = "medication"
     static let moodHourly = "moodHourly"

@@ -50,6 +50,8 @@
 	<string>App reads Health data to display progress in the care plan.</string>
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>App writes health data such as steps for task tracking.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>CareKit sample app would like to access your motion data for active tasks such as range of motion.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

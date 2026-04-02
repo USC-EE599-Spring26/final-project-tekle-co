@@ -13,6 +13,8 @@ import os.log
 import ParseSwift
 import ParseCareKit
 
+// swiftlint:disable function_body_length
+
 private enum TaskMetadataKey {
     static let card = "card"
     static let priority = "priority"
@@ -46,12 +48,77 @@ extension OCKStore {
         let addedContacts = try await addContacts(contactsNotInStore)
         return addedContacts
     }
-    
+
+    @MainActor
+    static func getCarePlanUUIDs() async throws -> [CarePlanID: UUID] {
+        var results = [CarePlanID: UUID]()
+        guard let store = AppDelegateKey.defaultValue?.store else {
+            return results
+        }
+        var query = OCKCarePlanQuery(for: Date())
+        query.ids = [CarePlanID.health.rawValue]
+        let foundCarePlans = try await store.fetchCarePlans(query: query)
+        CarePlanID.allCases.forEach { carePlanID in
+            results[carePlanID] = foundCarePlans
+                .first(where: { $0.id == carePlanID.rawValue })?.uuid
+        }
+        return results
+    }
+
+    // TODO: Rewrite this method in a functional programming style.
+    /// Adds `OCKAnyCarePlan`s to the store when their ids are not already present.
+    func addCarePlansIfNotPresent(
+        _ carePlans: [OCKAnyCarePlan],
+        patientUUID: UUID? = nil
+    ) async throws {
+        let carePlanIdsToAdd = carePlans.compactMap(\.id)
+        var query = OCKCarePlanQuery(for: Date())
+        query.ids = carePlanIdsToAdd
+        let foundCarePlans = try await fetchAnyCarePlans(query: query)
+        var carePlanNotInStore = [OCKAnyCarePlan]()
+        carePlans.forEach { potentialCarePlan in
+            if foundCarePlans.first(where: { $0.id == potentialCarePlan.id }) == nil {
+                guard var mutableCarePlan = potentialCarePlan as? OCKCarePlan else {
+                    carePlanNotInStore.append(potentialCarePlan)
+                    return
+                }
+                mutableCarePlan.patientUUID = patientUUID
+                carePlanNotInStore.append(mutableCarePlan)
+            }
+        }
+        guard !carePlanNotInStore.isEmpty else {
+            return
+        }
+        do {
+            _ = try await addAnyCarePlans(carePlanNotInStore)
+            Logger.ockStore.info("Added care plans into OCKStore.")
+        } catch {
+            Logger.ockStore.error("Error adding care plans: \(error.localizedDescription)")
+        }
+    }
+
+    func populateCarePlans(patientUUID: UUID? = nil) async throws {
+        let healthCarePlan = OCKCarePlan(
+            id: CarePlanID.health.rawValue,
+            title: "Health Care Plan",
+            patientUUID: patientUUID
+        )
+        try await addCarePlansIfNotPresent(
+            [healthCarePlan],
+            patientUUID: patientUUID
+        )
+    }
+
     // Adds tasks and contacts into the store
     func populateDefaultCarePlansTasksContacts(
+        patientUUID: UUID? = nil,
         startDate: Date = Date()
     ) async throws {
-        
+
+        try await populateCarePlans(patientUUID: patientUUID)
+        let carePlanUUIDs = try await Self.getCarePlanUUIDs()
+        let carePlanUUID = carePlanUUIDs[.health]
+
         let thisMorning = Calendar.current.startOfDay(for: startDate)
         let aFewDaysAgo = Calendar.current.date(byAdding: .day, value: -4, to: thisMorning)!
         let beforeBreakfast = Calendar.current.date(byAdding: .hour, value: 8, to: aFewDaysAgo)!
@@ -75,7 +142,7 @@ extension OCKStore {
         var doxylamine = OCKTask(
             id: TaskID.doxylamine,
             title: String(localized: "TAKE_DOXYLAMINE"),
-            carePlanUUID: nil,
+            carePlanUUID: carePlanUUID,
             schedule: schedule
         )
         doxylamine.instructions = String(localized: "DOXYLAMINE_INSTRUCTIONS")
@@ -98,7 +165,7 @@ extension OCKStore {
         var nausea = OCKTask(
             id: TaskID.nausea,
             title: String(localized: "TRACK_NAUSEA"),
-            carePlanUUID: nil,
+            carePlanUUID: carePlanUUID,
             schedule: nauseaSchedule
         )
         nausea.impactsAdherence = false
@@ -118,7 +185,7 @@ extension OCKStore {
         var kegels = OCKTask(
             id: TaskID.kegels,
             title: String(localized: "KEGEL_EXERCISES"),
-            carePlanUUID: nil,
+            carePlanUUID: carePlanUUID,
             schedule: kegelSchedule
         )
         kegels.impactsAdherence = true
@@ -137,35 +204,33 @@ extension OCKStore {
         var stretch = OCKTask(
             id: TaskID.stretch,
             title: String(localized: "STRETCH"),
-            carePlanUUID: nil,
+            carePlanUUID: carePlanUUID,
             schedule: stretchSchedule
         )
         stretch.impactsAdherence = true
         stretch.asset = "figure.flexibility"
         stretch.setCardMetadata(.simple, priority: 4)
         
-        let rangeOfMotion = createRangeOfMotionTask(carePlanUUID: nil)
-        
-        let checkIn = createCheckInSurveyTask(carePlanUUID: nil)
-        let qualityOfLife = createQualityOfLifeSurveyTask(carePlanUUID: nil)
-        
+        let qualityOfLife = createQualityOfLifeSurveyTask(carePlanUUID: carePlanUUID)
+
         _ = try await addTasksIfNotPresent(
             [
-                checkIn,
                 nausea,
                 doxylamine,
                 kegels,
-                rangeOfMotion,
                 stretch,
                 qualityOfLife
             ]
         )
-        
+
+        _ = try await addOnboardingTask(carePlanUUID)
+        _ = try await addUIKitSurveyTasks(carePlanUUID)
+
         var contact1 = OCKContact(
             id: "jane",
             givenName: "Jane",
             familyName: "Daniels",
-            carePlanUUID: nil
+            carePlanUUID: carePlanUUID
         )
         contact1.title = "Family Practice Doctor"
         contact1.role = "Dr. Daniels is a family practice doctor with 8 years of experience."
@@ -187,7 +252,7 @@ extension OCKStore {
             id: "matthew",
             givenName: "Matthew",
             familyName: "Reiff",
-            carePlanUUID: nil
+            carePlanUUID: carePlanUUID
         )
         contact2.title = "OBGYN"
         contact2.role = "Dr. Reiff is an OBGYN with 13 years of experience."
@@ -278,95 +343,68 @@ extension OCKStore {
         return qualityOfLife
     }
     
-    func createCheckInSurveyTask(carePlanUUID: UUID?) -> OCKTask {
-        let checkInTaskId = TaskID.checkIn
-        let thisMorning = Calendar.current.startOfDay(for: Date())
-        let aFewDaysAgo = Calendar.current.date(byAdding: .day, value: -4, to: thisMorning)!
-        let beforeBreakfast = Calendar.current.date(byAdding: .hour, value: 8, to: aFewDaysAgo)!
-        let checkInElement = OCKScheduleElement(
-            start: beforeBreakfast,
-            end: nil,
-            interval: DateComponents(day: 1)
+    func addOnboardingTask(_ carePlanUUID: UUID?) async throws -> [OCKTask] {
+        let onboardSchedule = OCKSchedule.dailyAtTime(
+            hour: 0, minutes: 0,
+            start: Date(), end: nil,
+            text: "Task Due!",
+            duration: .allDay
         )
-        let checkInSchedule = OCKSchedule(composing: [checkInElement])
-        
-        let textChoiceLow = String(localized: "CHECK_IN_LOW")
-        let textChoiceMedium = String(localized: "CHECK_IN_MEDIUM")
-        let textChoiceHigh = String(localized: "CHECK_IN_HIGH")
-        let choices: [TextChoice] = [
-            .init(id: "\(checkInTaskId)_0", choiceText: textChoiceLow, value: "Low"),
-            .init(id: "\(checkInTaskId)_1", choiceText: textChoiceMedium, value: "Medium"),
-            .init(id: "\(checkInTaskId)_2", choiceText: textChoiceHigh, value: "High")
-        ]
-        
-        let questionOne = SurveyQuestion(
-            id: "\(checkInTaskId)-energy",
-            type: .multipleChoice,
-            required: true,
-            title: String(localized: "CHECK_IN_ENERGY"),
-            textChoices: choices,
-            choiceSelectionLimit: .single
-        )
-        let questionTwo = SurveyQuestion(
-            id: "\(checkInTaskId)-pain",
-            type: .slider,
-            required: false,
-            title: String(localized: "CHECK_IN_PAIN"),
-            detail: String(localized: "CHECK_IN_PAIN_DETAIL"),
-            integerRange: 0...10,
-            sliderStepValue: 1
-        )
-        let stepOne = SurveyStep(
-            id: "\(checkInTaskId)-step-1",
-            questions: [questionOne, questionTwo]
-        )
-        
-        var checkIn = OCKTask(
-            id: checkInTaskId,
-            title: String(localized: "CHECK_IN_TITLE"),
+        var onboardTask = OCKTask(
+            id: Onboard.identifier(),
+            title: "Onboard",
             carePlanUUID: carePlanUUID,
-            schedule: checkInSchedule
+            schedule: onboardSchedule
         )
-        checkIn.impactsAdherence = true
-        checkIn.asset = "list.bullet.clipboard"
-        checkIn.instructions = String(localized: "CHECK_IN_PAIN_DETAIL")
-        checkIn.card = .survey
-        checkIn.priority = 0
-        checkIn.surveySteps = [stepOne]
-        
-        return checkIn
+        onboardTask.instructions = "You'll need to agree to some terms and conditions before we get started!"
+        onboardTask.impactsAdherence = false
+        onboardTask.card = .uiKitSurvey
+        onboardTask.uiKitSurvey = .onboard
+        return try await addTasksIfNotPresent([onboardTask])
     }
-    
-    func createRangeOfMotionTask(carePlanUUID: UUID?) -> OCKTask {
-        let rangeTaskId = TaskID.rangeOfMotion
+
+    func addUIKitSurveyTasks(_ carePlanUUID: UUID?) async throws -> [OCKTask] {
         let thisMorning = Calendar.current.startOfDay(for: Date())
-        let aFewDaysAgo = Calendar.current.date(byAdding: .day, value: -4, to: thisMorning)!
-        let morningSession = Calendar.current.date(byAdding: .hour, value: 9, to: aFewDaysAgo)!
-        
-        let rangeSchedule = OCKSchedule(
-            composing: [
-                OCKScheduleElement(
-                    start: morningSession,
-                    end: nil,
-                    interval: DateComponents(day: 1),
-                    text: String(localized: "RANGE_OF_MOTION_SCHEDULE_TEXT")
-                )
-            ]
+        let nextWeek = Calendar.current.date(
+            byAdding: .weekOfYear,
+            value: 1,
+            to: Date()
+        ) ?? Date()
+        let nextMonth = Calendar.current.date(
+            byAdding: .month,
+            value: 1,
+            to: thisMorning
+        ) ?? thisMorning
+        let dailyElement = OCKScheduleElement(
+            start: thisMorning,
+            end: nextWeek,
+            interval: DateComponents(day: 1),
+            text: nil,
+            targetValues: [],
+            duration: .allDay
         )
-        
-        var rangeOfMotion = OCKTask(
-            id: rangeTaskId,
-            title: String(localized: "RANGE_OF_MOTION_TITLE"),
+        let weeklyElement = OCKScheduleElement(
+            start: nextWeek,
+            end: nextMonth,
+            interval: DateComponents(weekOfYear: 1),
+            text: nil,
+            targetValues: [],
+            duration: .allDay
+        )
+        let rangeOfMotionCheckSchedule = OCKSchedule(
+            composing: [dailyElement, weeklyElement]
+        )
+        var rangeOfMotionTask = OCKTask(
+            id: RangeOfMotion.identifier(),
+            title: "Range Of Motion",
             carePlanUUID: carePlanUUID,
-            schedule: rangeSchedule
+            schedule: rangeOfMotionCheckSchedule
         )
-        rangeOfMotion.impactsAdherence = true
-        rangeOfMotion.instructions = String(localized: "RANGE_OF_MOTION_INSTRUCTIONS")
-        rangeOfMotion.asset = "figure.strengthtraining.functional"
-        rangeOfMotion.card = .custom
-        rangeOfMotion.priority = 4
-        
-        return rangeOfMotion
+        rangeOfMotionTask.priority = 2
+        rangeOfMotionTask.asset = "figure.walk.motion"
+        rangeOfMotionTask.card = .uiKitSurvey
+        rangeOfMotionTask.uiKitSurvey = .rangeOfMotion
+        return try await addTasksIfNotPresent([rangeOfMotionTask])
     }
 }
 

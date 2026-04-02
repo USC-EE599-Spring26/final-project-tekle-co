@@ -196,6 +196,41 @@ class Utility {
         }
     }
 
+    @MainActor
+    static func checkIfOnboardingIsComplete() async -> Bool {
+        #if os(iOS) && canImport(ResearchKit)
+        if UserDefaults.standard.bool(forKey: Constants.researchKitOnboardingCompletedKey) {
+            return true
+        }
+
+        guard let store = AppDelegateKey.defaultValue?.storeCoordinator else {
+            Logger.utility.error("CareKit store coordinator could not be unwrapped")
+            return false
+        }
+
+        let taskId = Onboard.identifier()
+        var outcomeQuery = OCKOutcomeQuery()
+        outcomeQuery.taskIDs = [taskId]
+
+        do {
+            let fromCoordinator = try await store.fetchAnyOutcomes(query: outcomeQuery)
+            if !fromCoordinator.isEmpty {
+                return true
+            }
+            // Writes sometimes surface on the underlying OCKStore before the coordinator aggregate sees them.
+            if let ockStore = AppDelegateKey.defaultValue?.store {
+                let fromStore = try await ockStore.fetchAnyOutcomes(query: outcomeQuery)
+                return !fromStore.isEmpty
+            }
+            return false
+        } catch {
+            return false
+        }
+        #else
+        return true
+        #endif
+    }
+
 	@MainActor
 	static func logoutAndResetAppState() async {
 		do {
