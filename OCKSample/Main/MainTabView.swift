@@ -5,8 +5,8 @@
 //  Created by Corey Baker on 9/18/22.
 //  Copyright © 2022 Network Reconnaissance Lab. All rights reserved.
 //
-// swiftlint:disable:next line_length
-// This was built using tutorial: https://www.hackingwithswift.com/books/ios-swiftui/creating-tabs-with-tabview-and-tabitem
+// This was built using tutorial:
+// https://www.hackingwithswift.com/books/ios-swiftui/creating-tabs-with-tabview-and-tabitem
 
 import CareKitStore
 import CareKitUI

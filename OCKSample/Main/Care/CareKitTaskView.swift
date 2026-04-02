@@ -110,7 +110,9 @@ private final class ORKSurveyPresentationDelegate: NSObject, ObservableObject, O
                 }
 
                 if values.isEmpty {
-                    Logger.careKitTask.warning("Survey finished with no outcome values; kind=\(String(describing: kind))")
+                    Logger.careKitTask.warning(
+                        "Survey finished with no outcome values; kind=\(String(describing: kind))"
+                    )
                     if kind == .onboard {
                         await finishAndNotify()
                     } else {

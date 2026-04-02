@@ -107,15 +107,17 @@ extension Onboard {
             ]
         )
         requestPermissionsStep.title = "Health Data Request"
-        // swiftlint:disable:next line_length
-        requestPermissionsStep.text = "Please review the health data types below and enable sharing to contribute to the study."
+        requestPermissionsStep.text =
+            "Please review the health data types below and enable sharing " +
+            "to contribute to the study."
 
         let completionStep = ORKCompletionStep(
             identifier: "\(identifier()).completionStep"
         )
         completionStep.title = "Enrollment Complete"
-        // swiftlint:disable:next line_length
-        completionStep.text = "Thank you for enrolling in this study. Your participation will contribute to meaningful research!"
+        completionStep.text =
+            "Thank you for enrolling in this study. Your participation will " +
+            "contribute to meaningful research!"
 
         return ORKOrderedTask(
             identifier: identifier(),

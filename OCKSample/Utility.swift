@@ -250,8 +250,10 @@ class Utility {
 		AppDelegateKey.defaultValue?.healthKitStore.requestHealthKitPermissionsForAllTasksInStore { error in
             guard let error = error else {
                 DispatchQueue.main.async {
-                    // swiftlint:disable:next line_length
-                    NotificationCenter.default.post(.init(name: Notification.Name(rawValue: Constants.finishedAskingForPermission)))
+                    let name = Notification.Name(
+                        rawValue: Constants.finishedAskingForPermission
+                    )
+                    NotificationCenter.default.post(.init(name: name))
                 }
                 return
             }
