@@ -15,6 +15,14 @@ enum TaskID {
     static let kegels = "kegels"
     static let steps = "steps"
     static let ovulationTestResult = "ovulationTestResult"
+    static let cognitiveLapseLogger = "cognitiveLapseLogger"
+    static let qualityOfLife = "qualityOfLife"
+    static let checkIn = "checkIn"
+    /// Matches `RangeOfMotion.identifier()` (UIKit ResearchKit task id from course template).
+    static let rangeOfMotion = "range of motion"
+
+    static let medication = "medication"
+    static let moodHourly = "moodHourly"
 
     static var ordered: [String] {
         orderedObjective + orderedSubjective
@@ -25,7 +33,15 @@ enum TaskID {
     }
 
     static var orderedSubjective: [String] {
-        [ Self.doxylamine, Self.kegels, Self.stretch, Self.nausea]
+        [
+            Self.doxylamine,
+            Self.kegels,
+            Self.rangeOfMotion,
+            Self.stretch,
+            Self.nausea,
+            Self.medication,
+            Self.cognitiveLapseLogger
+        ]
     }
 
     static var orderedWatchOS: [String] {

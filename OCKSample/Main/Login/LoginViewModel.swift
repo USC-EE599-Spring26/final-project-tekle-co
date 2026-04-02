@@ -6,12 +6,14 @@
 //  Copyright © 2020 Network Reconnaissance Lab. All rights reserved.
 //
 
+import Foundation
 import CareKit
 import CareKitStore
 import ParseCareKit
 import ParseSwift
 import os.log
 import WatchConnectivity
+// swiftlint:disable function_parameter_count
 
 @MainActor
 class LoginViewModel: ObservableObject {
@@ -73,6 +75,27 @@ class LoginViewModel: ObservableObject {
     private func finishCompletingSignIn(
 		_ careKitPatient: OCKPatient? = nil
 	) async throws {
+        // Ensure baseline tasks exist for returning users as well.
+        // addTasksIfNotPresent / addContactsIfNotPresent keep this idempotent.
+        if let appDelegate = AppDelegateKey.defaultValue {
+            do {
+                let currentDate = Date()
+                let startDate = daysInThePastToGenerateSampleData < 0 ? Calendar.current.date(
+                    byAdding: .day,
+                    value: daysInThePastToGenerateSampleData,
+                    to: currentDate
+                )! : currentDate
+                try await appDelegate.store.populateDefaultCarePlansTasksContacts(
+                    startDate: startDate
+                )
+                try await appDelegate.healthKitStore.populateDefaultHealthKitTasks(
+                    startDate: startDate
+                )
+            } catch {
+                Logger.login.error("Could not ensure default tasks on sign in: \(error)")
+            }
+        }
+        
         if let careKitUser = careKitPatient {
             var user = try await User.current()
             guard let userType = careKitUser.userType,
@@ -157,6 +180,8 @@ class LoginViewModel: ObservableObject {
     }
 
     // MARK: User intentional behavior
+    // swiftlint:disable function_parameter_count
+
     /**
      Signs up the user *asynchronously*.
 
@@ -165,14 +190,17 @@ class LoginViewModel: ObservableObject {
      - parameter password: The password the person signing up.
      - parameter firstName: The first name of the person signing up.
      - parameter lastName: The last name of the person signing up.
+     - parameter email: The email of the person signing up.
+
     */
     func signup(
-		_ type: UserType,
-		username: String,
-		password: String,
-		firstName: String,
-		lastName: String
-	) async {
+        _ type: UserType,
+        username: String,
+        password: String,
+        firstName: String,
+        lastName: String,
+        email: String
+    ) async {
         do {
             guard try await PCKUtility.isServerAvailable() else {
                 Logger.login.error("Server health is not \"ok\"")
@@ -182,6 +210,8 @@ class LoginViewModel: ObservableObject {
             // Set any properties you want saved on the user befor logging in.
             newUser.username = username.lowercased()
             newUser.password = password
+            newUser.email = email.lowercased()
+
             let user = try await newUser.signup()
             Logger.login.info("Parse signup successful: \(user)")
             let patient = try await savePatientAfterSignUp(type,
@@ -198,12 +228,17 @@ class LoginViewModel: ObservableObject {
                 self.loginError = parseError
 
             default:
-                // swiftlint:disable:next line_length
-                Logger.login.error("*** Error Signing up as user for Parse Server. Are you running parse-hipaa and is the initialization complete? Check http://localhost:1337 in your browser. If you are still having problems check for help here: https://github.com/netreconlab/parse-postgres#getting-started ***")
+                let signupHelp = "https://github.com/netreconlab/parse-postgres#getting-started"
+                let signupErrorMessage = "*** Error Signing up as user for Parse Server. " +
+                    "Are you running parse-hipaa and is the initialization complete? " +
+                    "Check http://localhost:1337 in your browser. " +
+                    "If you are still having problems check for help here: \(signupHelp) ***"
+                Logger.login.error("\(signupErrorMessage)")
                 self.loginError = parseError
             }
         }
     }
+    // swiftlint:enable function_parameter_count
 
     /**
      Logs in the user *asynchronously*.
@@ -231,8 +266,10 @@ class LoginViewModel: ObservableObject {
                 Logger.login.error("Error saving the patient after signup: \(error, privacy: .public)")
             }
         } catch {
-            // swiftlint:disable:next line_length
-            Logger.login.error("*** Error logging into Parse Server. If you are still having problems check for help here: https://github.com/netreconlab/parse-hipaa#getting-started ***")
+            let loginHelp = "https://github.com/netreconlab/parse-hipaa#getting-started"
+            let loginErrorMessage = "*** Error logging into Parse Server. If you are still having problems " +
+                "check for help here: \(loginHelp) ***"
+            Logger.login.error("\(loginErrorMessage)")
             Logger.login.error("Error details: \(error)")
             guard let parseError = error as? ParseError else {
                 // Handle unknow error, right now it's silent
@@ -259,8 +296,10 @@ class LoginViewModel: ObservableObject {
                                                            lastName: "Login")
             try? await finishCompletingSignIn(patient)
         } catch {
-            // swiftlint:disable:next line_length
-            Logger.login.error("*** Error logging into Parse Server. If you are still having problems check for help here: https://github.com/netreconlab/parse-hipaa#getting-started ***")
+            let anonLoginHelp = "https://github.com/netreconlab/parse-hipaa#getting-started"
+            let anonLoginErrorMessage = "*** Error logging into Parse Server. If you are still having problems " +
+                "check for help here: \(anonLoginHelp) ***"
+            Logger.login.error("\(anonLoginErrorMessage)")
             Logger.login.error("Error details: \(String(describing: error))")
             guard let parseError = error as? ParseError else {
                 return

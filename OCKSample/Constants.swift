@@ -46,4 +46,8 @@ enum Constants {
     static let userLoggedIn = "userLoggedIn"
     static let userTypeKey = "userType"
     static let appName = "ParseCareKitSample"
+    static let uiKitSurvey = "uiKitSurvey"
+    /// Set when the ResearchKit onboard flow saves successfully;
+    /// avoids relying on outcome queries (Parse/coordinator timing).
+    static let researchKitOnboardingCompletedKey = "researchKitOnboardingCompleted"
 }

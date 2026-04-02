@@ -89,6 +89,10 @@ extension OCKStore {
 		}
 	}
 
+	#if os(watchOS)
+		func populateDefaultCarePlansTasksContacts(startDate: Date = Date()) async throws {}
+	#endif
+
 	private func createOutcomeValue(
 		_ value: OCKOutcomeValueUnderlyingType,
 		createdDate: Date
