@@ -229,12 +229,11 @@ class LoginViewModel: ObservableObject {
 
             default:
                 let signupHelp = "https://github.com/netreconlab/parse-postgres#getting-started"
-                Logger.login.error(
-                    "*** Error Signing up as user for Parse Server. " +
-                        "Are you running parse-hipaa and is the initialization complete? " +
-                        "Check http://localhost:1337 in your browser. " +
-                        "If you are still having problems check for help here: \(signupHelp) ***"
-                )
+                let signupErrorMessage = "*** Error Signing up as user for Parse Server. " +
+                    "Are you running parse-hipaa and is the initialization complete? " +
+                    "Check http://localhost:1337 in your browser. " +
+                    "If you are still having problems check for help here: \(signupHelp) ***"
+                Logger.login.error("\(signupErrorMessage)")
                 self.loginError = parseError
             }
         }
@@ -268,10 +267,9 @@ class LoginViewModel: ObservableObject {
             }
         } catch {
             let loginHelp = "https://github.com/netreconlab/parse-hipaa#getting-started"
-            Logger.login.error(
-                "*** Error logging into Parse Server. If you are still having problems " +
-                    "check for help here: \(loginHelp) ***"
-            )
+            let loginErrorMessage = "*** Error logging into Parse Server. If you are still having problems " +
+                "check for help here: \(loginHelp) ***"
+            Logger.login.error("\(loginErrorMessage)")
             Logger.login.error("Error details: \(error)")
             guard let parseError = error as? ParseError else {
                 // Handle unknow error, right now it's silent
@@ -299,10 +297,9 @@ class LoginViewModel: ObservableObject {
             try? await finishCompletingSignIn(patient)
         } catch {
             let anonLoginHelp = "https://github.com/netreconlab/parse-hipaa#getting-started"
-            Logger.login.error(
-                "*** Error logging into Parse Server. If you are still having problems " +
-                    "check for help here: \(anonLoginHelp) ***"
-            )
+            let anonLoginErrorMessage = "*** Error logging into Parse Server. If you are still having problems " +
+                "check for help here: \(anonLoginHelp) ***"
+            Logger.login.error("\(anonLoginErrorMessage)")
             Logger.login.error("Error details: \(String(describing: error))")
             guard let parseError = error as? ParseError else {
                 return
