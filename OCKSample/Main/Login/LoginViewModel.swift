@@ -95,7 +95,7 @@ class LoginViewModel: ObservableObject {
                 Logger.login.error("Could not ensure default tasks on sign in: \(error)")
             }
         }
-        
+
         if let careKitUser = careKitPatient {
             var user = try await User.current()
             guard let userType = careKitUser.userType,
@@ -154,6 +154,13 @@ class LoginViewModel: ObservableObject {
         newPatient.userType = type
         let savedPatient = try await appDelegate.store.addPatient(newPatient)
 
+        let newContact = OCKContact(
+            id: remoteUUID.uuidString,
+            name: newPatient.name,
+            carePlanUUID: nil
+        )
+        _ = try await appDelegate.store.addAnyContact(newContact)
+
 		let currentDate = Date()
 		let startDate = daysInThePastToGenerateSampleData < 0 ? Calendar.current.date(
 			byAdding: .day,
@@ -161,11 +168,12 @@ class LoginViewModel: ObservableObject {
 			to: currentDate
 		)! : currentDate
         try await appDelegate.store.populateDefaultCarePlansTasksContacts(
-			startDate: startDate
-		)
+            patientUUID: savedPatient.uuid,
+            startDate: startDate
+        )
         try await appDelegate.healthKitStore.populateDefaultHealthKitTasks(
-			startDate: startDate
-		)
+            startDate: startDate
+        )
 		if startDate < currentDate {
 			try await appDelegate.store.populateSampleOutcomes(
 				startDate: startDate

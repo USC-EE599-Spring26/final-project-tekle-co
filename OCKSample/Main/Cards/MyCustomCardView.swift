@@ -94,15 +94,15 @@ struct MyCustomCardView: CareKitEssentialView {
     private var foregroundColor: Color {
         isComplete ? .accentColor : .white
     }
-    
+
     private var isRangeOfMotionTask: Bool {
         event.task.id == RangeOfMotion.identifier()
     }
-    
+
     private var badgeTitle: LocalizedStringKey {
         isRangeOfMotionTask ? "RANGE_OF_MOTION_BADGE" : "CUSTOM_CARD_BADGE"
     }
-    
+
     private var badgeIconName: String {
         isRangeOfMotionTask ? "figure.strengthtraining.functional" : "sparkles.rectangle.stack.fill"
     }
