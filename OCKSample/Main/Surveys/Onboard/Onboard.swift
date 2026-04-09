@@ -1,4 +1,3 @@
-
 import CareKitStore
 import HealthKit
 #if canImport(ResearchKit)

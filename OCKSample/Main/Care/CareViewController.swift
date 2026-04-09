@@ -83,7 +83,7 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
             object: nil
         )
     }
-    
+
     @objc private func updateSynchronizationProgress(
         _ notification: Notification
     ) {
@@ -423,7 +423,7 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
 
         return surveyViewController
     }
-    
+
     private func appendTasks(
         _ tasks: [any OCKAnyTask],
         to listViewController: OCKListViewController,

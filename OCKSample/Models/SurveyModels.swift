@@ -183,6 +183,23 @@ private struct SliderQuestionView: View {
 struct SurveyStep: Codable, Identifiable {
     let id: String
     let questions: [SurveyQuestion]
+    let asset: String?
+    let title: String?
+    let subtitle: String?
+
+    init(
+        id: String,
+        questions: [SurveyQuestion],
+        asset: String? = nil,
+        title: String? = nil,
+        subtitle: String? = nil
+    ) {
+        self.id = id
+        self.questions = questions
+        self.asset = asset
+        self.title = title
+        self.subtitle = subtitle
+    }
 }
 
 private extension View {

@@ -15,8 +15,12 @@ import os.log
 extension OCKHealthKitPassthroughStore {
 
     func populateDefaultHealthKitTasks(
-		startDate: Date = Date()
-	) async throws {
+        _ patientUUID: UUID? = nil,
+        startDate: Date = Date()
+    ) async throws {
+
+        let carePlanUUIDs = try await OCKStore.getCarePlanUUIDs()
+        let carePlanUUID = carePlanUUIDs[.health]
 
         let countUnit = HKUnit.count()
         let stepTargetValue = OCKOutcomeValue(
@@ -36,7 +40,7 @@ extension OCKHealthKitPassthroughStore {
         var steps = OCKHealthKitTask(
             id: TaskID.steps,
             title: String(localized: "STEPS"),
-            carePlanUUID: nil,
+            carePlanUUID: carePlanUUID,
             schedule: stepSchedule,
             healthKitLinkage: OCKHealthKitLinkage(
                 quantityIdentifier: .stepCount,
@@ -58,16 +62,14 @@ extension OCKHealthKitPassthroughStore {
         var ovulationTestResult = OCKHealthKitTask(
             id: TaskID.ovulationTestResult,
             title: String(localized: "OVULATION_TEST_RESULT"),
-            carePlanUUID: nil,
+            carePlanUUID: carePlanUUID,
             schedule: ovulationTestResultSchedule,
             healthKitLinkage: OCKHealthKitLinkage(
                 categoryIdentifier: .ovulationTestResult
             )
         )
         ovulationTestResult.asset = "circle.dotted"
-//        let tasks = [ steps, ovulationTestResult ]
-
-//        _ = try await addTasksIfNotPresent(tasks)
-
+        let tasks = [ steps, ovulationTestResult ]
+        _ = try await addTasksIfNotPresent(tasks)
     }
 }
