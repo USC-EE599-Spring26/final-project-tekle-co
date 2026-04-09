@@ -37,10 +37,14 @@ struct MyContactView: UIViewControllerRepresentable {
 		context: Context
 	) {}
 
-	func createViewController() -> UIViewController {
-		let viewController = MyContactViewController(store: careStore)
-		return viewController
-	}
+    func createViewController() -> UIViewController {
+        #if os(iOS)
+        let viewController = MyContactViewController(store: careStore)
+        return viewController
+        #else
+        return UIViewController()
+        #endif
+    }
 }
 
 struct MyContactView_Previews: PreviewProvider {
