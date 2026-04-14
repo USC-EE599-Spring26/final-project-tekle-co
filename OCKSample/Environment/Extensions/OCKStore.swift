@@ -13,6 +13,7 @@ import Contacts
 import os.log
 import ParseSwift
 import ParseCareKit
+import CareKit
 
 extension OCKStore {
 
@@ -75,6 +76,8 @@ extension OCKStore {
         )
         doxylamine.instructions = String(localized: "DOXYLAMINE_INSTRUCTIONS")
         doxylamine.asset = "pills.fill"
+        doxylamine.card = .checklist
+        doxylamine.priority = 2
 
         let nauseaSchedule = OCKSchedule(
             composing: [
@@ -115,6 +118,8 @@ extension OCKStore {
         )
         kegels.impactsAdherence = true
         kegels.instructions = String(localized: "KEGEL_INSTRUCTIONS")
+        kegels.card = .simple
+        kegels.priority = 3
 
         let stretchElement = OCKScheduleElement(
             start: beforeBreakfast,
@@ -132,6 +137,8 @@ extension OCKStore {
         )
         stretch.impactsAdherence = true
         stretch.asset = "figure.walk"
+        stretch.card = .simple
+        stretch.priority = 5
 
         var medication = OCKTask(
             id: TaskID.medication,
@@ -141,6 +148,8 @@ extension OCKStore {
         )
         medication.instructions = String("Take orally twice a day with food")
         medication.asset = "pills.fill"
+        medication.card = .checklist
+        medication.priority = 7
 
         let cognitiveLapseLoggerSchedule = OCKSchedule(
             composing: [
@@ -163,18 +172,50 @@ extension OCKStore {
         )
         cognitiveLapseLogger.impactsAdherence = false
         cognitiveLapseLogger.instructions = String("When you start feeling brain fog, press")
-        cognitiveLapseLogger.asset = "bed.double"
+        cognitiveLapseLogger.asset = "brain.head.profile"
+        cognitiveLapseLogger.card = .button
+        cognitiveLapseLogger.priority = 8
 
+        #if !os(watchOS)
+        let checkIn = createCheckInSurveyTask(carePlanUUID: nil)
+        let qualityOfLife = createQualityOfLifeSurveyTask(carePlanUUID: nil)
+        let rangeOfMotion = createRangeOfMotionTask(carePlanUUID: nil)
         _ = try await addTasksIfNotPresent(
             [
+                checkIn,
+                qualityOfLife,
+                nausea,
+                doxylamine,
+                kegels,
+                rangeOfMotion,
+                stretch,
                 medication,
                 cognitiveLapseLogger
-//                nausea,
-//                doxylamine,
-//                kegels,
-//                stretch
             ]
         )
+        #else
+        _ = try await addTasksIfNotPresent(
+            [
+                nausea,
+                doxylamine,
+                kegels,
+                stretch,
+                medication,
+                cognitiveLapseLogger
+            ]
+        )
+        #endif
+
+//        _ = try await addTasksIfNotPresent(
+//            [
+//                medication,
+//                cognitiveLapseLogger
+////                nausea,
+////                doxylamine,
+////                kegels,
+////                stretch
+//            ]
+//        )
 
         var contact1 = OCKContact(
             id: "jane",
@@ -226,4 +267,122 @@ extension OCKStore {
             ]
         )
     }
+
+    #if !os(watchOS)
+    func createQualityOfLifeSurveyTask(carePlanUUID: UUID?) -> OCKTask {
+        let taskId = TaskID.qualityOfLife
+        let thisMorning = Calendar.current.startOfDay(for: Date())
+        let aFewDaysAgo = Calendar.current.date(byAdding: .day, value: -4, to: thisMorning)!
+        let beforeBreakfast = Calendar.current.date(byAdding: .hour, value: 8, to: aFewDaysAgo)!
+        let schedule = OCKSchedule(composing: [
+            OCKScheduleElement(start: beforeBreakfast, end: nil, interval: DateComponents(day: 1))
+        ])
+        let choices: [TextChoice] = [
+            .init(id: "\(taskId)_0", choiceText: String(localized: "ANSWER_YES"), value: "Yes"),
+            .init(id: "\(taskId)_1", choiceText: String(localized: "ANSWER_NO"), value: "No")
+        ]
+        let questionOne = SurveyQuestion(
+            id: "\(taskId)-managing-time",
+            type: .multipleChoice,
+            required: true,
+            title: String(localized: "QUALITY_OF_LIFE_TIME"),
+            textChoices: choices,
+            choiceSelectionLimit: .single
+        )
+        let questionTwo = SurveyQuestion(
+            id: taskId,
+            type: .slider,
+            required: false,
+            title: String(localized: "QUALITY_OF_LIFE_STRESS"),
+            detail: String(localized: "QUALITY_OF_LIFE_STRESS_DETAIL"),
+            integerRange: 0...10,
+            sliderStepValue: 1
+        )
+        let stepOne = SurveyStep(id: "\(taskId)-step-1", questions: [questionOne, questionTwo])
+        var task = OCKTask(
+            id: taskId,
+            title: String(localized: "QUALITY_OF_LIFE"),
+            carePlanUUID: carePlanUUID,
+            schedule: schedule
+        )
+        task.impactsAdherence = true
+        task.asset = "brain.head.profile"
+        task.card = .survey
+        task.priority = 1
+        task.surveySteps = [stepOne]
+        return task
+    }
+
+    func createCheckInSurveyTask(carePlanUUID: UUID?) -> OCKTask {
+        let taskId = TaskID.checkIn
+        let thisMorning = Calendar.current.startOfDay(for: Date())
+        let aFewDaysAgo = Calendar.current.date(byAdding: .day, value: -4, to: thisMorning)!
+        let beforeBreakfast = Calendar.current.date(byAdding: .hour, value: 8, to: aFewDaysAgo)!
+        let schedule = OCKSchedule(composing: [
+            OCKScheduleElement(start: beforeBreakfast, end: nil, interval: DateComponents(day: 1))
+        ])
+        let choices: [TextChoice] = [
+            .init(id: "\(taskId)_0", choiceText: String(localized: "CHECK_IN_LOW"), value: "Low"),
+            .init(id: "\(taskId)_1", choiceText: String(localized: "CHECK_IN_MEDIUM"), value: "Medium"),
+            .init(id: "\(taskId)_2", choiceText: String(localized: "CHECK_IN_HIGH"), value: "High")
+        ]
+        let questionOne = SurveyQuestion(
+            id: "\(taskId)-energy",
+            type: .multipleChoice,
+            required: true,
+            title: String(localized: "CHECK_IN_ENERGY"),
+            textChoices: choices,
+            choiceSelectionLimit: .single
+        )
+        let questionTwo = SurveyQuestion(
+            id: "\(taskId)-pain",
+            type: .slider,
+            required: false,
+            title: String(localized: "CHECK_IN_PAIN"),
+            detail: String(localized: "CHECK_IN_PAIN_DETAIL"),
+            integerRange: 0...10,
+            sliderStepValue: 1
+        )
+        let stepOne = SurveyStep(id: "\(taskId)-step-1", questions: [questionOne, questionTwo])
+        var task = OCKTask(
+            id: taskId,
+            title: String(localized: "CHECK_IN_TITLE"),
+            carePlanUUID: carePlanUUID,
+            schedule: schedule
+        )
+        task.impactsAdherence = true
+        task.asset = "list.bullet.clipboard"
+        task.card = .survey
+        task.priority = 0
+        task.surveySteps = [stepOne]
+        return task
+    }
+
+    func createRangeOfMotionTask(carePlanUUID: UUID?) -> OCKTask {
+        let taskId = TaskID.rangeOfMotion
+        let thisMorning = Calendar.current.startOfDay(for: Date())
+        let aFewDaysAgo = Calendar.current.date(byAdding: .day, value: -4, to: thisMorning)!
+        let morningSession = Calendar.current.date(byAdding: .hour, value: 9, to: aFewDaysAgo)!
+        let schedule = OCKSchedule(composing: [
+            OCKScheduleElement(
+                start: morningSession,
+                end: nil,
+                interval: DateComponents(day: 1),
+                text: String(localized: "RANGE_OF_MOTION_SCHEDULE_TEXT")
+            )
+        ])
+        var task = OCKTask(
+            id: taskId,
+            title: String(localized: "RANGE_OF_MOTION_TITLE"),
+            carePlanUUID: carePlanUUID,
+            schedule: schedule
+        )
+        task.impactsAdherence = true
+        task.instructions = String(localized: "RANGE_OF_MOTION_INSTRUCTIONS")
+        task.asset = "figure.strengthtraining.functional"
+        task.card = .custom
+        task.priority = 4
+        return task
+    }
+    #endif
 }

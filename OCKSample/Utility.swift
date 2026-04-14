@@ -203,6 +203,8 @@ class Utility {
 		} catch {
 			Logger.utility.error("Error logging out: \(error)")
 		}
+        UserDefaults.standard.removeObject(forKey: "CareViewController.hasShownCheckInPopup")
+        UserDefaults.standard.removeObject(forKey: "CareViewController.lastShownCheckInDay")
 		AppDelegateKey.defaultValue?.resetAppToInitialState()
 		PCKUtility.removeCache()
 	}

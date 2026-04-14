@@ -5,7 +5,6 @@
 //  Created by Corey Baker on 4/14/23.
 //  Copyright © 2023 Network Reconnaissance Lab. All rights reserved.
 //
-
 import Foundation
 
 enum TaskID {
@@ -16,6 +15,9 @@ enum TaskID {
     static let steps = "steps"
     static let ovulationTestResult = "ovulationTestResult"
     static let cognitiveLapseLogger = "cognitiveLapseLogger"
+    static let qualityOfLife = "qualityOfLife"
+    static let checkIn = "checkIn"
+    static let rangeOfMotion = "rangeOfMotion"
 
     static let medication = "medication"
     static let moodHourly = "moodHourly"
@@ -25,11 +27,13 @@ enum TaskID {
     }
 
     static var orderedObjective: [String] {
-        [ Self.steps, Self.ovulationTestResult ]
+        [ Self.steps, Self.ovulationTestResult, Self.checkIn, Self.qualityOfLife ]
     }
 
     static var orderedSubjective: [String] {
-        [ Self.doxylamine, Self.kegels, Self.stretch, Self.nausea, Self.medication, Self.cognitiveLapseLogger ]
+        [ Self.doxylamine, Self.kegels, Self.rangeOfMotion,
+          Self.stretch, Self.nausea, Self.medication,
+          Self.cognitiveLapseLogger ]
     }
 
     static var orderedWatchOS: [String] {

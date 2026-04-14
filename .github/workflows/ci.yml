@@ -34,6 +34,8 @@ jobs:
           scheme: 'OCKVisionSample'
     name: ${{ matrix.scheme }} Unit Tests
     steps:
+      with:
+        submodules: recursive
     - uses: actions/checkout@v6
     - name: Install SwiftLint
       run: brew install swiftlint
