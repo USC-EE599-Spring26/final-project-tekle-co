@@ -42,14 +42,8 @@ import UIKit
 @MainActor
 final class CareViewController: OCKDailyPageViewController, @unchecked Sendable {
 
-    private enum CheckInPopupKey {
-        static let hasShown = "CareViewController.hasShownCheckInPopup"
-        static let lastShownDay = "CareViewController.lastShownCheckInDay"
-    }
-
     private var isSyncing = false
     private var isLoading = false
-    private var didPresentCheckInOnLaunch = false
     private let swiftUIPadding: CGFloat = 15
     private var style: Styler {
         CustomStylerKey.defaultValue
@@ -78,21 +72,16 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
         )
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(reloadView(_:)),
+            selector: #selector(reloadAfterHealthKitPermission(_:)),
             name: Notification.Name(rawValue: Constants.finishedAskingForPermission),
             object: nil
         )
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(reloadView(_:)),
+            selector: #selector(forceReloadCareFeed(_:)),
             name: Notification.Name(rawValue: Constants.shouldRefreshView),
             object: nil
         )
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        presentCheckInSurveyIfNeeded()
     }
 
     @objc private func updateSynchronizationProgress(
@@ -111,8 +100,6 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
                 action: #selector(self.synchronizeWithRemote)
             )
             self.navigationItem.rightBarButtonItem?.tintColor = self.view.tintColor
-
-            // Give sometime for the user to see 100
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
                 guard let self else { return }
                 self.navigationItem.rightBarButtonItem = UIBarButtonItem(
@@ -152,11 +139,24 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
         }
     }
 
-    @objc private func reloadView(_ notification: Notification? = nil) {
+    @objc private func reloadAfterHealthKitPermission(_ notification: Notification) {
+        _ = notification
         guard !isLoading else {
             return
         }
-        self.reload()
+        reload()
+    }
+
+    /// Survey saves and similar: always refresh, even if a prepare cycle left `isLoading` true.
+    @objc private func forceReloadCareFeed(_ notification: Notification) {
+        _ = notification
+        isLoading = false
+        reload()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) { [weak self] in
+            guard let self else { return }
+            self.isLoading = false
+            self.reload()
+        }
     }
 
     /*
@@ -170,29 +170,42 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
     ) {
         self.isLoading = true
 
-        // Always call this method to ensure dates for
-        // queries are correct.
-        let date = modifyDateIfNeeded(date)
-        let isCurrentDay = isSameDay(as: date)
-
-        #if os(iOS)
-        // Only show the tip view on the current date
-        if isCurrentDay {
-            if Calendar.current.isDate(date, inSameDayAs: Date()) {
-                // Add a non-CareKit view into the list
-                let tipTitle = "Benefits of exercising"
-                let tipText = "Learn how activity can promote a healthy pregnancy."
-                let tipView = TipView()
-                tipView.headerView.titleLabel.text = tipTitle
-                tipView.headerView.detailLabel.text = tipText
-                tipView.imageView.image = UIImage(named: "exercise.jpg")
-                tipView.customStyle = CustomStylerKey.defaultValue
-                listViewController.appendView(tipView, animated: false)
+        Task { @MainActor in
+            #if os(iOS)
+            let onboardingComplete = await Utility.checkIfOnboardingIsComplete()
+            if !onboardingComplete {
+                listViewController.clear()
+                var query = OCKEventQuery(for: Date())
+                query.taskIDs = [Onboard.identifier()]
+                let onboardCard = EventQueryView<CareKitTaskView>(query: query)
+                    .padding(.vertical, swiftUIPadding)
+                    .formattedHostingController()
+                listViewController.appendViewController(onboardCard, animated: false)
+                self.isLoading = false
+                return
             }
-        }
-        #endif
+            #endif
 
-        fetchAndDisplayTasks(on: listViewController, for: date)
+            let date = modifyDateIfNeeded(date)
+            let isCurrentDay = isSameDay(as: date)
+
+            #if os(iOS)
+            if isCurrentDay {
+                if Calendar.current.isDate(date, inSameDayAs: Date()) {
+                    let tipTitle = "Benefits of exercising"
+                    let tipText = "Learn how activity can promote a healthy pregnancy."
+                    let tipView = TipView()
+                    tipView.headerView.titleLabel.text = tipTitle
+                    tipView.headerView.detailLabel.text = tipText
+                    tipView.imageView.image = UIImage(named: "exercise.jpg")
+                    tipView.customStyle = CustomStylerKey.defaultValue
+                    listViewController.appendView(tipView, animated: false)
+                }
+            }
+            #endif
+
+            await fetchAndDisplayTasks(on: listViewController, for: date)
+        }
     }
 
     private func isSameDay(as date: Date) -> Bool {
@@ -215,18 +228,19 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
     private func fetchAndDisplayTasks(
         on listViewController: OCKListViewController,
         for date: Date
-    ) {
-        Task {
-            let tasks = await self.fetchTasks(on: date)
-            appendTasks(tasks, to: listViewController, date: date)
-        }
+    ) async {
+        let tasks = await self.fetchTasks(on: date)
+        appendTasks(tasks, to: listViewController, date: date)
     }
 
     private func fetchTasks(on date: Date) async -> [any OCKAnyTask] {
         var query = OCKTaskQuery(for: date)
         query.excludesTasksWithNoEvents = false
         do {
-            let tasks = try await store.fetchAnyTasks(query: query)
+            var tasks = try await store.fetchAnyTasks(query: query)
+
+            // Remove the onboarding task so it doesn't show after onboarding.
+            tasks.removeAll(where: { $0.id == Onboard.identifier() })
 
             guard let tasksWithPriority = tasks as? [CareTask] else {
                 Logger.feed.warning("Could not cast all tasks to \"CareTask\"")
@@ -256,9 +270,20 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
 
             switch standardTask.card {
 
+            case .uiKitSurvey:
+                #if os(iOS)
+                let card = EventQueryView<CareKitTaskView>(
+                    query: query
+                )
+                .padding(.vertical, swiftUIPadding)
+                .formattedHostingController()
+                return [card]
+                #else
+                return nil
+                #endif
+
             case .button:
                 #if os(iOS)
-                // UIKit CareKit cards are not available on visionOS in this target.
                 let card = OCKButtonLogTaskViewController(
                     query: query,
                     store: self.store
@@ -280,11 +305,9 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
                 #endif
 
             case .featured:
-                // Can be implememented based off of midterm.
                 return nil
 
             case .grid:
-                // Can be implememented based off of midterm.
                 return nil
 
             case .instruction:
@@ -293,21 +316,17 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
                 )
                 .padding(.vertical, swiftUIPadding)
                 .formattedHostingController()
-
                 return [card]
 
             case .link:
-                // Can be implememented based off of midterm.
                 return nil
 
             case .simple:
-
                 let card = EventQueryView<SimpleTaskView>(
                     query: query
                 )
                 .padding(.vertical, swiftUIPadding)
                 .formattedHostingController()
-
                 return [card]
 
             case .survey:
@@ -320,9 +339,8 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
                     )
                     return nil
                 }
-
                 return [card]
-            
+
             case .custom:
                 let card = EventQueryView<MyCustomCardView>(
                     query: query
@@ -339,7 +357,6 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
             switch healthTask.card {
 
             case .labeledValue:
-                // Can be implememented based off of midterm.
                 return nil
 
             case .numericProgress:
@@ -348,15 +365,14 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
                 )
                 .padding(.vertical, swiftUIPadding)
                 .formattedHostingController()
-
                 return [card]
+
             default:
                 return nil
             }
         } else {
             return nil
         }
-
     }
 
     private func researchSurveyViewController(
@@ -390,97 +406,6 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
         .formattedHostingController()
 
         return surveyViewController
-    }
-    
-    private func presentCheckInSurveyIfNeeded() {
-        guard !didPresentCheckInOnLaunch else { return }
-        guard presentedViewController == nil else { return }
-        guard shouldPresentCheckInToday() else {
-            return
-        }
-        
-        let now = Date()
-        Task { @MainActor in
-            var query = OCKTaskQuery(for: now)
-            query.ids = [TaskID.checkIn]
-            do {
-                let tasks = try await store.fetchAnyTasks(query: query)
-                guard let checkInTask = tasks.first as? OCKTask else {
-                    return
-                }
-                guard let steps = checkInTask.surveySteps else {
-                    return
-                }
-                didPresentCheckInOnLaunch = true
-                markCheckInPresentedForToday()
-                presentCheckInSurveyModal(task: checkInTask, steps: steps)
-            } catch {
-                Logger.feed.error("Could not fetch check-in task: \(error, privacy: .public)")
-            }
-        }
-    }
-    
-    private func presentCheckInSurveyModal(task: OCKTask, steps: [SurveyStep]) {
-        let questions = steps.flatMap(\.questions)
-        let modalContent = ScrollView {
-            VStack(alignment: .leading, spacing: 12) {
-                ForEach(Array(questions.enumerated()), id: \.element.id) { index, question in
-                    Text("Question \(index + 1) of \(questions.count)")
-                        .font(.headline)
-                        .foregroundStyle(.secondary)
-                        .padding(.horizontal, 6)
-                    question.view()
-                }
-            }
-            .padding(16)
-        }
-        
-        let host = UIHostingController(rootView: modalContent)
-        host.view.backgroundColor = .systemBackground
-        host.title = task.title ?? String(localized: "CHECK_IN_TITLE")
-        host.navigationItem.largeTitleDisplayMode = .never
-        host.navigationItem.rightBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .done,
-            target: self,
-            action: #selector(dismissPresentedSurvey)
-        )
-        let nav = UINavigationController(rootViewController: host)
-        nav.modalPresentationStyle = .pageSheet
-        #if os(iOS)
-        if let sheet = nav.sheetPresentationController {
-            sheet.detents = [
-                UISheetPresentationController.Detent.medium(),
-                UISheetPresentationController.Detent.large()
-            ]
-            sheet.prefersGrabberVisible = true
-            sheet.preferredCornerRadius = 24
-            sheet.prefersScrollingExpandsWhenScrolledToEdge = false
-        }
-        #endif
-        present(nav, animated: true)
-    }
-    
-    @objc private func dismissPresentedSurvey() {
-        dismiss(animated: true)
-    }
-    
-    private func shouldPresentCheckInToday() -> Bool {
-        let defaults = UserDefaults.standard
-        let todayStart = Calendar.current.startOfDay(for: Date()).timeIntervalSince1970
-        let lastShownDay = defaults.double(forKey: CheckInPopupKey.lastShownDay)
-        
-        guard lastShownDay > 0 else {
-            // Backward compatibility: if older "hasShown" flag exists, treat as shown for today only.
-            return !defaults.bool(forKey: CheckInPopupKey.hasShown)
-        }
-        return lastShownDay < todayStart
-    }
-    
-    private func markCheckInPresentedForToday() {
-        let defaults = UserDefaults.standard
-        let todayStart = Calendar.current.startOfDay(for: Date()).timeIntervalSince1970
-        defaults.set(todayStart, forKey: CheckInPopupKey.lastShownDay)
-        defaults.removeObject(forKey: CheckInPopupKey.hasShown)
     }
 
     private func appendTasks(

@@ -16,11 +16,11 @@ import os.log
 class Utility {
 
     static func convertNonSendableDictionaryToSendable(_ dictionary: [String: Any]) -> [String: String] {
-		let sendableDictionary: [String: String] = dictionary.reduce(into: [:]) {
-			$0[$1.key] = $1.value as? String
-		}
-		return sendableDictionary
-	}
+        let sendableDictionary: [String: String] = dictionary.reduce(into: [:]) {
+            $0[$1.key] = $1.value as? String
+        }
+        return sendableDictionary
+    }
 
     static func prepareSyncMessageForWatch() -> [String: String] {
         var returnMessage = [String: String]()
@@ -91,23 +91,23 @@ class Utility {
         }
         let installation = currentInstallation
         let isUpdatingInstallation = isUpdatingInstallationMutable
-		do {
-			if isUpdatingInstallation {
-				let updatedInstallation = try await installation.save()
-				Logger.utility.info("""
-					Updated installation: \(updatedInstallation, privacy: .private)
-				""")
-			} else {
-				let updatedInstallation = try await installation.create()
-				Logger.utility.info("""
-					Created installation: \(updatedInstallation, privacy: .private)
-				""")
-			}
-		} catch {
-			Logger.utility.error("""
-				Could not update installation: \(error)
-			""")
-		}
+        do {
+            if isUpdatingInstallation {
+                let updatedInstallation = try await installation.save()
+                Logger.utility.info("""
+                    Updated installation: \(updatedInstallation, privacy: .private)
+                """)
+            } else {
+                let updatedInstallation = try await installation.create()
+                Logger.utility.info("""
+                    Created installation: \(updatedInstallation, privacy: .private)
+                """)
+            }
+        } catch {
+            Logger.utility.error("""
+                Could not update installation: \(error)
+            """)
+        }
     }
 
     static func createPreviewStore() -> OCKStore {
@@ -119,27 +119,27 @@ class Utility {
                 _ = try await store.fetchPatient(withID: patientId)
             } catch {
                 var patient = OCKPatient(
-					id: patientId,
-					givenName: "Preview",
-					familyName: "Patient"
-				)
+                    id: patientId,
+                    givenName: "Preview",
+                    familyName: "Patient"
+                )
                 patient.birthday = Calendar.current.date(
-					byAdding: .year,
-					value: -20,
-					to: Date()
-				)
+                    byAdding: .year,
+                    value: -20,
+                    to: Date()
+                )
                 _ = try? await store.addPatient(patient)
-				let startDate = Calendar.current.date(
-					byAdding: .day,
-					value: -30,
-					to: Date()
-				)!
+                let startDate = Calendar.current.date(
+                    byAdding: .day,
+                    value: -30,
+                    to: Date()
+                )!
                 try? await store.populateDefaultCarePlansTasksContacts(
-					startDate: startDate
-				)
+                    startDate: startDate
+                )
                 try? await store.populateSampleOutcomes(
-					startDate: startDate
-				)
+                    startDate: startDate
+                )
             }
         }
         return store
@@ -196,27 +196,64 @@ class Utility {
         }
     }
 
-	@MainActor
-	static func logoutAndResetAppState() async {
-		do {
-			try await User.logout()
-		} catch {
-			Logger.utility.error("Error logging out: \(error)")
-		}
-        UserDefaults.standard.removeObject(forKey: "CareViewController.hasShownCheckInPopup")
-        UserDefaults.standard.removeObject(forKey: "CareViewController.lastShownCheckInDay")
-		AppDelegateKey.defaultValue?.resetAppToInitialState()
-		PCKUtility.removeCache()
-	}
+    @MainActor
+    static func logoutAndResetAppState() async {
+        do {
+            try await User.logout()
+        } catch {
+            Logger.utility.error("Error logging out: \(error)")
+        }
+        AppDelegateKey.defaultValue?.resetAppToInitialState()
+        PCKUtility.removeCache()
+    }
+
+    @MainActor
+    static func checkIfOnboardingIsComplete() async -> Bool {
+        #if os(iOS) && canImport(ResearchKit)
+        // Fast path: if we already recorded completion in UserDefaults
+        if UserDefaults.standard.bool(forKey: Constants.researchKitOnboardingCompletedKey) {
+            return true
+        }
+
+        guard let store = AppDelegateKey.defaultValue?.store else {
+            Logger.utility.error("CareKit store could not be unwrapped")
+            return false
+        }
+
+        let taskId = Onboard.identifier()
+        var outcomeQuery = OCKOutcomeQuery()
+        outcomeQuery.taskIDs = [taskId]
+
+        do {
+            let outcomes = try await store.fetchAnyOutcomes(query: outcomeQuery)
+            if !outcomes.isEmpty {
+                return true
+            }
+            // Also check the store coordinator in case writes haven't propagated
+            if let coordinator = AppDelegateKey.defaultValue?.storeCoordinator {
+                let fromCoordinator = try await coordinator.fetchAnyOutcomes(query: outcomeQuery)
+                return !fromCoordinator.isEmpty
+            }
+            return false
+        } catch {
+            Logger.utility.error("Error checking onboarding: \(error)")
+            return false
+        }
+        #else
+        return true
+        #endif
+    }
 
     #if os(iOS) || os(visionOS)
-	@MainActor
-	static func requestHealthKitPermissions() {
-		AppDelegateKey.defaultValue?.healthKitStore.requestHealthKitPermissionsForAllTasksInStore { error in
+    @MainActor
+    static func requestHealthKitPermissions() {
+        AppDelegateKey.defaultValue?.healthKitStore.requestHealthKitPermissionsForAllTasksInStore { error in
             guard let error = error else {
                 DispatchQueue.main.async {
-                    // swiftlint:disable:next line_length
-                    NotificationCenter.default.post(.init(name: Notification.Name(rawValue: Constants.finishedAskingForPermission)))
+                    let name = Notification.Name(
+                        rawValue: Constants.finishedAskingForPermission
+                    )
+                    NotificationCenter.default.post(.init(name: name))
                 }
                 return
             }

@@ -95,7 +95,7 @@ class LoginViewModel: ObservableObject {
                 Logger.login.error("Could not ensure default tasks on sign in: \(error)")
             }
         }
-        
+
         if let careKitUser = careKitPatient {
             var user = try await User.current()
             guard let userType = careKitUser.userType,
