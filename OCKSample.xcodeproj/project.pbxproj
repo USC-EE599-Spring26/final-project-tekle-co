@@ -7,9 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0B0D4C4E2FA2B73B00EAB066 /* ReactionTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B0D4C4D2FA2B73B00EAB066 /* ReactionTime.swift */; };
+		0B0D4C4F2FA2B73B00EAB066 /* ReactionTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B0D4C4D2FA2B73B00EAB066 /* ReactionTime.swift */; };
 		0B6EF54A2F85B34D00E7E4DD /* Consent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70C2FF942F7340EF00F8C6E3 /* Consent.swift */; };
 		0B6EF54B2F85B34D00E7E4DD /* Onboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70C2FF9E2F73419A00F8C6E3 /* Onboard.swift */; };
-		0B6EF54C2F85B34D00E7E4DD /* RangeOfMotion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70C2FFA12F7341B900F8C6E3 /* RangeOfMotion.swift */; };
 		0B6EF54D2F85B34D00E7E4DD /* Survey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70C2FF9B2F73415600F8C6E3 /* Survey.swift */; };
 		0B6EF54E2F85B34D00E7E4DD /* Surveyable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70C2FF982F73412F00F8C6E3 /* Surveyable.swift */; };
 		0B6EF54F2F85B34D00E7E4DD /* CareKitTaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D100092F73490000AB008 /* CareKitTaskView.swift */; };
@@ -127,7 +128,6 @@
 		70C2FF992F73413200F8C6E3 /* Surveyable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70C2FF982F73412F00F8C6E3 /* Surveyable.swift */; };
 		70C2FF9C2F73415800F8C6E3 /* Survey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70C2FF9B2F73415600F8C6E3 /* Survey.swift */; };
 		70C2FF9F2F73419B00F8C6E3 /* Onboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70C2FF9E2F73419A00F8C6E3 /* Onboard.swift */; };
-		70C2FFA22F7341BF00F8C6E3 /* RangeOfMotion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70C2FFA12F7341B900F8C6E3 /* RangeOfMotion.swift */; };
 		70CF66E428E1E74C00FAE977 /* TintColorFlipKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70CF66E328E1E74C00FAE977 /* TintColorFlipKey.swift */; };
 		70CF66E528E1E74C00FAE977 /* TintColorFlipKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70CF66E328E1E74C00FAE977 /* TintColorFlipKey.swift */; };
 		70D100022F73490000AB001 /* CarePlanID.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D100012F73490000AB000 /* CarePlanID.swift */; };
@@ -279,6 +279,7 @@
 /* Begin PBXFileReference section */
 		03580E3E23CFA2E400A57818 /* OCKSample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = OCKSample.entitlements; sourceTree = "<group>"; };
 		0520468223C3C1F2004F0F36 /* OCKSample.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = OCKSample.xctestplan; sourceTree = "<group>"; };
+		0B0D4C4D2FA2B73B00EAB066 /* ReactionTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactionTime.swift; sourceTree = "<group>"; };
 		0B7E4EDA2F5A2B65002E86E9 /* AddHealthKitTaskView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddHealthKitTaskView.swift; sourceTree = "<group>"; };
 		0B8A8CF52F87285900E22C47 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		0B8A8CFF2F87287800E22C47 /* ProfileImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileImageView.swift; sourceTree = "<group>"; };
@@ -323,7 +324,6 @@
 		70C2FF982F73412F00F8C6E3 /* Surveyable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Surveyable.swift; sourceTree = "<group>"; };
 		70C2FF9B2F73415600F8C6E3 /* Survey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Survey.swift; sourceTree = "<group>"; };
 		70C2FF9E2F73419A00F8C6E3 /* Onboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Onboard.swift; sourceTree = "<group>"; };
-		70C2FFA12F7341B900F8C6E3 /* RangeOfMotion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeOfMotion.swift; sourceTree = "<group>"; };
 		70CF66E328E1E74C00FAE977 /* TintColorFlipKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TintColorFlipKey.swift; sourceTree = "<group>"; };
 		70D100012F73490000AB000 /* CarePlanID.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarePlanID.swift; sourceTree = "<group>"; };
 		70D100052F73490000AB004 /* OCKTask+ResearchKitSwiftUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OCKTask+ResearchKitSwiftUI.swift"; sourceTree = "<group>"; };
@@ -616,8 +616,8 @@
 			isa = PBXGroup;
 			children = (
 				70C2FF972F73411A00F8C6E3 /* Onboard */,
-				70C2FFA12F7341B900F8C6E3 /* RangeOfMotion.swift */,
 				70C2FF9B2F73415600F8C6E3 /* Survey.swift */,
+				0B0D4C4D2FA2B73B00EAB066 /* ReactionTime.swift */,
 				70C2FF982F73412F00F8C6E3 /* Surveyable.swift */,
 			);
 			path = Surveys;
@@ -1183,6 +1183,7 @@
 				0B8A8D0B2F87291000E22C47 /* CustomContactViewController.swift in Sources */,
 				707D29502DCBE68500980253 /* TaskID.swift in Sources */,
 				707D29512DCBE68500980253 /* CareView.swift in Sources */,
+				0B0D4C4E2FA2B73B00EAB066 /* ReactionTime.swift in Sources */,
 				707D29522DCBE68500980253 /* AppDelegateKey.swift in Sources */,
 				707D29532DCBE68500980253 /* Logger.swift in Sources */,
 				707D29542DCBE68500980253 /* TintColorFlipKey.swift in Sources */,
@@ -1224,7 +1225,6 @@
 				70C2FF952F7340F300F8C6E3 /* Consent.swift in Sources */,
 				70C2FF992F73413200F8C6E3 /* Surveyable.swift in Sources */,
 				70C2FF9F2F73419B00F8C6E3 /* Onboard.swift in Sources */,
-				70C2FFA22F7341BF00F8C6E3 /* RangeOfMotion.swift in Sources */,
 				70C2FF9C2F73415800F8C6E3 /* Survey.swift in Sources */,
 				A8C2D8F92F59A9BA006B971F /* ManageTasksView.swift in Sources */,
 				707D296E2DCBE68500980253 /* ColorStyler.swift in Sources */,
@@ -1326,7 +1326,6 @@
 				A89D8D4D2F728B5600F94C6C /* SurveyModels.swift in Sources */,
 				0B6EF54A2F85B34D00E7E4DD /* Consent.swift in Sources */,
 				0B6EF54B2F85B34D00E7E4DD /* Onboard.swift in Sources */,
-				0B6EF54C2F85B34D00E7E4DD /* RangeOfMotion.swift in Sources */,
 				0B6EF54D2F85B34D00E7E4DD /* Survey.swift in Sources */,
 				0B6EF54E2F85B34D00E7E4DD /* Surveyable.swift in Sources */,
 				70D100022F73490000AB001 /* CarePlanID.swift in Sources */,
@@ -1355,6 +1354,7 @@
 				0B7E4EDC2F5A2B65002E86E9 /* AddHealthKitTaskView.swift in Sources */,
 				7036E4C9256E1A6F006E9A3C /* ProfileView.swift in Sources */,
 				A89D8D502F728B5E00F94C6C /* OCKTask+CareMetadata.swift in Sources */,
+				0B0D4C4F2FA2B73B00EAB066 /* ReactionTime.swift in Sources */,
 				A89D8CF02F727CE800F94C6C /* CareKitCard.swift in Sources */,
 				7083A856279CA40A00B3832E /* PCKUtility.swift in Sources */,
 				70B8E0A52F0EC1CA00440FCA /* Mutex.swift in Sources */,

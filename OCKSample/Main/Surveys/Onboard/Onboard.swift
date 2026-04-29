@@ -77,17 +77,19 @@ extension Onboard {
         )
         webViewStep.showSignatureAfterContent = true
 
-        // TODO: Set these to HealthKit types you want to request by default.
+        // HealthKit types needed for ADHD comedown tracking
         let healthKitTypesToWrite: Set<HKSampleType> = [
-            .quantityType(forIdentifier: .bodyMassIndex)!,
+            .quantityType(forIdentifier: .dietaryWater)!,
             .quantityType(forIdentifier: .activeEnergyBurned)!,
             .workoutType()
         ]
         let healthKitTypesToRead: Set<HKObjectType> = [
             .characteristicType(forIdentifier: .dateOfBirth)!,
-            .workoutType(),
-            .quantityType(forIdentifier: .appleStandTime)!,
-            .quantityType(forIdentifier: .appleExerciseTime)!
+            .quantityType(forIdentifier: .dietaryWater)!,
+            .quantityType(forIdentifier: .stepCount)!,
+            .quantityType(forIdentifier: .appleExerciseTime)!,
+            .quantityType(forIdentifier: .restingHeartRate)!,
+            .workoutType()
         ]
         let healthKitPermissionType = ORKHealthKitPermissionType(
             sampleTypesToWrite: healthKitTypesToWrite,

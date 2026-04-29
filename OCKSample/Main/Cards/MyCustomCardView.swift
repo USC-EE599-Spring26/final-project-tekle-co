@@ -88,23 +88,23 @@ struct MyCustomCardView: CareKitEssentialView {
         if isComplete {
             return "COMPLETED"
         }
-        return isRangeOfMotionTask ? "START_RANGE_OF_MOTION" : "START_SURVEY"
+        return isReactionTimeTask ? "START_REACTION_TIME" : "START_SURVEY"
     }
 
     private var foregroundColor: Color {
         isComplete ? .accentColor : .white
     }
 
-    private var isRangeOfMotionTask: Bool {
-        event.task.id == RangeOfMotion.identifier()
+    private var isReactionTimeTask: Bool {
+        event.task.id == ReactionTime.identifier()
     }
 
     private var badgeTitle: LocalizedStringKey {
-        isRangeOfMotionTask ? "RANGE_OF_MOTION_BADGE" : "CUSTOM_CARD_BADGE"
+        isReactionTimeTask ? "REACTION_TIME_BADGE" : "CUSTOM_CARD_BADGE"
     }
 
     private var badgeIconName: String {
-        isRangeOfMotionTask ? "figure.strengthtraining.functional" : "sparkles.rectangle.stack.fill"
+        isReactionTimeTask ? "bolt.fill" : "sparkles.rectangle.stack.fill"
     }
 
     private func toggleEventCompletion() {
@@ -146,7 +146,7 @@ struct MyCustomCardView_Previews: PreviewProvider {
     static var store = Utility.createPreviewStore()
     static var query: OCKEventQuery {
         var query = OCKEventQuery(for: Date())
-        query.taskIDs = [TaskID.doxylamine]
+        query.taskIDs = [TaskID.comedownSeverity]
         return query
     }
 

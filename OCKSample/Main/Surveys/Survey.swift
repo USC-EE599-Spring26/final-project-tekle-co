@@ -11,7 +11,7 @@ import Foundation
 
 enum Survey: String, CaseIterable, Identifiable {
     case onboard = "Onboard"
-    case rangeOfMotion = "Range of Motion"
+    case reactionTime = "Reaction Time"
 
     var id: Self { self }
 
@@ -19,8 +19,8 @@ enum Survey: String, CaseIterable, Identifiable {
         switch self {
         case .onboard:
             Onboard()
-        case .rangeOfMotion:
-            RangeOfMotion()
+        case .reactionTime:
+            ReactionTime()
         }
     }
 }

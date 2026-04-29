@@ -20,14 +20,84 @@ extension OCKHealthKitPassthroughStore {
     ) async throws {
 
         let carePlanUUIDs = try await OCKStore.getCarePlanUUIDs()
-        let carePlanUUID = carePlanUUIDs[.health]
+        let lifestylePlanUUID = carePlanUUIDs[.lifestyleFactors]
 
+        // =====================================================================
+        // MARK: HealthKit Task 1 — Hydration (daily water intake)
+        // =====================================================================
+        let mlUnit = HKUnit.literUnit(with: .milli)
+        let hydrationTarget = OCKOutcomeValue(
+            2000.0,
+            units: mlUnit.unitString
+        )
+        let hydrationSchedule = OCKSchedule.dailyAtTime(
+            hour: 8,
+            minutes: 0,
+            start: startDate,
+            end: nil,
+            text: nil,
+            duration: .allDay,
+            targetValues: [hydrationTarget]
+        )
+        var hydration = OCKHealthKitTask(
+            id: TaskID.hydration,
+            title: "Water Intake",
+            carePlanUUID: lifestylePlanUUID,
+            schedule: hydrationSchedule,
+            healthKitLinkage: OCKHealthKitLinkage(
+                quantityIdentifier: .dietaryWater,
+                quantityType: .cumulative,
+                unit: mlUnit
+            )
+        )
+        hydration.instructions = "Track your daily water intake. "
+            + "Dehydration can worsen ADHD comedown symptoms like brain fog and irritability."
+        hydration.asset = "drop.fill"
+        hydration.card = .numericProgress
+        hydration.priority = 8
+
+        // =====================================================================
+        // MARK: HealthKit Task 2 — Resting Heart Rate
+        // =====================================================================
+        let bpmUnit = HKUnit.count().unitDivided(by: .minute())
+        let heartRateTarget = OCKOutcomeValue(
+            70.0,
+            units: bpmUnit.unitString
+        )
+        let heartRateSchedule = OCKSchedule.dailyAtTime(
+            hour: 7,
+            minutes: 0,
+            start: startDate,
+            end: nil,
+            text: nil,
+            duration: .allDay,
+            targetValues: [heartRateTarget]
+        )
+        var heartRate = OCKHealthKitTask(
+            id: TaskID.sleep,
+            title: "Resting Heart Rate",
+            carePlanUUID: lifestylePlanUUID,
+            schedule: heartRateSchedule,
+            healthKitLinkage: OCKHealthKitLinkage(
+                quantityIdentifier: .restingHeartRate,
+                quantityType: .discrete,
+                unit: bpmUnit
+            )
+        )
+        heartRate.instructions = "Your resting heart rate from Apple Watch. "
+            + "Elevated heart rate can indicate stress during comedown."
+        heartRate.asset = "heart.fill"
+        heartRate.card = .labeledValue
+        heartRate.priority = 9
+
+        // =====================================================================
+        // MARK: Retained — Steps (kept from sample, useful for exercise correlation)
+        // =====================================================================
         let countUnit = HKUnit.count()
-        let stepTargetValue = OCKOutcomeValue(
+        let stepTarget = OCKOutcomeValue(
             2000.0,
             units: countUnit.unitString
         )
-        let stepTargetValues = [ stepTargetValue ]
         let stepSchedule = OCKSchedule.dailyAtTime(
             hour: 8,
             minutes: 0,
@@ -35,12 +105,12 @@ extension OCKHealthKitPassthroughStore {
             end: nil,
             text: nil,
             duration: .allDay,
-            targetValues: stepTargetValues
+            targetValues: [stepTarget]
         )
         var steps = OCKHealthKitTask(
             id: TaskID.steps,
-            title: String(localized: "STEPS"),
-            carePlanUUID: carePlanUUID,
+            title: "Steps",
+            carePlanUUID: lifestylePlanUUID,
             schedule: stepSchedule,
             healthKitLinkage: OCKHealthKitLinkage(
                 quantityIdentifier: .stepCount,
@@ -49,27 +119,10 @@ extension OCKHealthKitPassthroughStore {
             )
         )
         steps.asset = "figure.walk"
+        steps.card = .numericProgress
+        steps.priority = 10
 
-        let ovulationTestResultSchedule = OCKSchedule.dailyAtTime(
-            hour: 8,
-            minutes: 0,
-            start: startDate,
-            end: nil,
-            text: nil,
-            duration: .allDay,
-            targetValues: []
-        )
-        var ovulationTestResult = OCKHealthKitTask(
-            id: TaskID.ovulationTestResult,
-            title: String(localized: "OVULATION_TEST_RESULT"),
-            carePlanUUID: carePlanUUID,
-            schedule: ovulationTestResultSchedule,
-            healthKitLinkage: OCKHealthKitLinkage(
-                categoryIdentifier: .ovulationTestResult
-            )
-        )
-        ovulationTestResult.asset = "circle.dotted"
-        let tasks = [ steps, ovulationTestResult ]
+        let tasks = [hydration, heartRate, steps]
         _ = try await addTasksIfNotPresent(tasks)
     }
 }

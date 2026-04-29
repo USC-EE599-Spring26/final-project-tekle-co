@@ -15,12 +15,6 @@ import ParseCareKit
 
 // swiftlint:disable function_body_length
 
-private enum TaskMetadataKey {
-    static let card = "card"
-    static let priority = "priority"
-    static let survey = "survey"
-}
-
 extension OCKStore {
 
     func addContactsIfNotPresent(_ contacts: [OCKContact]) async throws -> [OCKContact] {
@@ -32,7 +26,7 @@ extension OCKStore {
 
         let foundContacts = try await fetchContacts(query: query)
 
-        // Find all missing tasks.
+        // Find all missing contacts.
         let contactsNotInStore = contacts.filter { potentialContact -> Bool in
             guard foundContacts.first(where: { $0.id == potentialContact.id }) == nil else {
                 return false
@@ -40,7 +34,7 @@ extension OCKStore {
             return true
         }
 
-        // Only add if there's a new task
+        // Only add if there's a new contact
         guard contactsNotInStore.count > 0 else {
             return []
         }
@@ -56,7 +50,7 @@ extension OCKStore {
             return results
         }
         var query = OCKCarePlanQuery(for: Date())
-        query.ids = [CarePlanID.health.rawValue]
+        query.ids = CarePlanID.allCases.map { $0.rawValue }
         let foundCarePlans = try await store.fetchCarePlans(query: query)
         CarePlanID.allCases.forEach { carePlanID in
             results[carePlanID] = foundCarePlans
@@ -65,8 +59,6 @@ extension OCKStore {
         return results
     }
 
-    // TODO: Rewrite this method in a functional programming style.
-    /// Adds `OCKAnyCarePlan`s to the store when their ids are not already present.
     func addCarePlansIfNotPresent(
         _ carePlans: [OCKAnyCarePlan],
         patientUUID: UUID? = nil
@@ -98,13 +90,18 @@ extension OCKStore {
     }
 
     func populateCarePlans(patientUUID: UUID? = nil) async throws {
-        let healthCarePlan = OCKCarePlan(
-            id: CarePlanID.health.rawValue,
-            title: "Health Care Plan",
+        let medicationPlan = OCKCarePlan(
+            id: CarePlanID.medicationManagement.rawValue,
+            title: "Medication & Comedown Tracking",
+            patientUUID: patientUUID
+        )
+        let lifestylePlan = OCKCarePlan(
+            id: CarePlanID.lifestyleFactors.rawValue,
+            title: "Lifestyle Factors",
             patientUUID: patientUUID
         )
         try await addCarePlansIfNotPresent(
-            [healthCarePlan],
+            [medicationPlan, lifestylePlan],
             patientUUID: patientUUID
         )
     }
@@ -117,126 +114,196 @@ extension OCKStore {
 
         try await populateCarePlans(patientUUID: patientUUID)
         let carePlanUUIDs = try await Self.getCarePlanUUIDs()
-        let carePlanUUID = carePlanUUIDs[.health]
+        let medPlanUUID = carePlanUUIDs[.medicationManagement]
+        let lifestylePlanUUID = carePlanUUIDs[.lifestyleFactors]
 
         let thisMorning = Calendar.current.startOfDay(for: startDate)
         let aFewDaysAgo = Calendar.current.date(byAdding: .day, value: -4, to: thisMorning)!
-        let beforeBreakfast = Calendar.current.date(byAdding: .hour, value: 8, to: aFewDaysAgo)!
-        let afterLunch = Calendar.current.date(byAdding: .hour, value: 14, to: aFewDaysAgo)!
+        let earlyMorning = Calendar.current.date(byAdding: .hour, value: 7, to: aFewDaysAgo)!
+        let midMorning = Calendar.current.date(byAdding: .hour, value: 9, to: aFewDaysAgo)!
+        let afternoon = Calendar.current.date(byAdding: .hour, value: 15, to: aFewDaysAgo)!
 
-        let schedule = OCKSchedule(
-            composing: [
-                OCKScheduleElement(
-                    start: beforeBreakfast,
-                    end: nil,
-                    interval: DateComponents(day: 1)
-                ),
-                OCKScheduleElement(
-                    start: afterLunch,
-                    end: nil,
-                    interval: DateComponents(day: 2)
-                )
-            ]
+        // =====================================================================
+        // MARK: Task 1 — Medication Log (button log, daily at 9am)
+        // =====================================================================
+        let medLogSchedule = OCKSchedule.dailyAtTime(
+            hour: 9, minutes: 0,
+            start: midMorning, end: nil,
+            text: "Log when you take your medication",
+            duration: .allDay
         )
-
-        var doxylamine = OCKTask(
-            id: TaskID.doxylamine,
-            title: String(localized: "TAKE_DOXYLAMINE"),
-            carePlanUUID: carePlanUUID,
-            schedule: schedule
+        var medicationLog = OCKTask(
+            id: TaskID.medicationLog,
+            title: "Medication Log",
+            carePlanUUID: medPlanUUID,
+            schedule: medLogSchedule
         )
-        doxylamine.instructions = String(localized: "DOXYLAMINE_INSTRUCTIONS")
-        doxylamine.asset = "pills.fill"
-        doxylamine.setCardMetadata(.checklist, priority: 2)
+        medicationLog.instructions = "Tap to log when you take your ADHD medication. "
+            + "The timestamp helps track your comedown window."
+        medicationLog.impactsAdherence = true
+        medicationLog.asset = "pills.fill"
+        medicationLog.card = .button
+        medicationLog.priority = 1
 
-        let nauseaSchedule = OCKSchedule(
-            composing: [
-                OCKScheduleElement(
-                    start: beforeBreakfast,
-                    end: nil,
-                    interval: DateComponents(day: 1),
-                    text: String(localized: "ANYTIME_DURING_DAY"),
-                    targetValues: [],
-                    duration: .allDay
-                )
-            ]
+        // =====================================================================
+        // MARK: Task 2 — Comedown Severity (custom card, daily at 3pm)
+        // =====================================================================
+        let comedownSchedule = OCKSchedule.dailyAtTime(
+            hour: 15, minutes: 0,
+            start: afternoon, end: nil,
+            text: "Rate your comedown severity",
+            duration: .allDay
         )
-
-        var nausea = OCKTask(
-            id: TaskID.nausea,
-            title: String(localized: "TRACK_NAUSEA"),
-            carePlanUUID: carePlanUUID,
-            schedule: nauseaSchedule
+        var comedownSeverity = OCKTask(
+            id: TaskID.comedownSeverity,
+            title: "Comedown Severity",
+            carePlanUUID: medPlanUUID,
+            schedule: comedownSchedule
         )
-        nausea.impactsAdherence = false
-        nausea.instructions = String(localized: "NAUSEA_INSTRUCTIONS")
-        nausea.asset = "bed.double"
-        nausea.card = .button
-        nausea.priority = 5
+        comedownSeverity.instructions = "Rate how intense your brain fog or emotional crash "
+            + "feels right now on a scale of 1 (minimal) to 10 (severe)."
+        comedownSeverity.impactsAdherence = true
+        comedownSeverity.asset = "brain.head.profile.fill"
+        comedownSeverity.card = .custom
+        comedownSeverity.priority = 2
 
-        let kegelElement = OCKScheduleElement(
-            start: beforeBreakfast,
+        // =====================================================================
+        // MARK: Task 3 — Meal Timing Log (custom card, 3x/day)
+        // =====================================================================
+        let breakfastElement = OCKScheduleElement(
+            start: Calendar.current.date(byAdding: .hour, value: 8, to: aFewDaysAgo)!,
+            end: nil,
+            interval: DateComponents(day: 1),
+            text: "Breakfast",
+            targetValues: [],
+            duration: .hours(3)
+        )
+        let lunchElement = OCKScheduleElement(
+            start: Calendar.current.date(byAdding: .hour, value: 12, to: aFewDaysAgo)!,
+            end: nil,
+            interval: DateComponents(day: 1),
+            text: "Lunch",
+            targetValues: [],
+            duration: .hours(3)
+        )
+        let dinnerElement = OCKScheduleElement(
+            start: Calendar.current.date(byAdding: .hour, value: 18, to: aFewDaysAgo)!,
+            end: nil,
+            interval: DateComponents(day: 1),
+            text: "Dinner",
+            targetValues: [],
+            duration: .hours(3)
+        )
+        let mealSchedule = OCKSchedule(
+            composing: [breakfastElement, lunchElement, dinnerElement]
+        )
+        var mealTiming = OCKTask(
+            id: TaskID.mealTiming,
+            title: "Meal Timing",
+            carePlanUUID: lifestylePlanUUID,
+            schedule: mealSchedule
+        )
+        mealTiming.instructions = "Log each meal and when you ate relative to your comedown. "
+            + "This helps identify if meal timing affects your crash."
+        mealTiming.impactsAdherence = false
+        mealTiming.asset = "fork.knife"
+        mealTiming.card = .custom
+        mealTiming.priority = 4
+
+        // =====================================================================
+        // MARK: Task 4 — Exercise (checklist, every other day)
+        // =====================================================================
+        let exerciseElement = OCKScheduleElement(
+            start: earlyMorning,
             end: nil,
             interval: DateComponents(day: 2)
         )
-        let kegelSchedule = OCKSchedule(
-            composing: [kegelElement]
+        let exerciseSchedule = OCKSchedule(
+            composing: [exerciseElement]
         )
-        var kegels = OCKTask(
-            id: TaskID.kegels,
-            title: String(localized: "KEGEL_EXERCISES"),
-            carePlanUUID: carePlanUUID,
-            schedule: kegelSchedule
+        var exercise = OCKTask(
+            id: TaskID.exercise,
+            title: "Exercise / Movement",
+            carePlanUUID: lifestylePlanUUID,
+            schedule: exerciseSchedule
         )
-        kegels.impactsAdherence = true
-        kegels.instructions = String(localized: "KEGEL_INSTRUCTIONS")
-        kegels.card = .simple
-        kegels.priority = 3
+        exercise.instructions = "Check off the types of exercise you did today. "
+            + "Movement can significantly affect how your comedown feels."
+        exercise.impactsAdherence = true
+        exercise.asset = "figure.run"
+        exercise.card = .checklist
+        exercise.priority = 6
 
-        let stretchElement = OCKScheduleElement(
-            start: beforeBreakfast,
-            end: nil,
-            interval: DateComponents(day: 1)
+        // =====================================================================
+        // MARK: Task 5 — Focus/Stimulus Log (grid, weekdays only)
+        // =====================================================================
+        var focusElements = [OCKScheduleElement]()
+        for dayOffset in 0..<5 {
+            var nextWeekday = DateComponents()
+            nextWeekday.weekday = 2 + dayOffset // 2=Mon ... 6=Fri
+            nextWeekday.hour = 10
+            guard let nextDate = Calendar.current.nextDate(
+                after: aFewDaysAgo,
+                matching: nextWeekday,
+                matchingPolicy: .nextTime
+            ) else { continue }
+            let element = OCKScheduleElement(
+                start: nextDate,
+                end: nil,
+                interval: DateComponents(weekOfYear: 1)
+            )
+            focusElements.append(element)
+        }
+        let focusSchedule = OCKSchedule(composing: focusElements)
+        var focusStimulus = OCKTask(
+            id: TaskID.focusStimulus,
+            title: "Focus & Stimulus",
+            carePlanUUID: lifestylePlanUUID,
+            schedule: focusSchedule
         )
-        let stretchSchedule = OCKSchedule(
-            composing: [stretchElement]
-        )
-        var stretch = OCKTask(
-            id: TaskID.stretch,
-            title: String(localized: "STRETCH"),
-            carePlanUUID: carePlanUUID,
-            schedule: stretchSchedule
-        )
-        stretch.impactsAdherence = true
-        stretch.asset = "figure.flexibility"
-        stretch.setCardMetadata(.simple, priority: 4)
+        focusStimulus.instructions = "Select the focus or calming activities you did today. "
+            + "Tracks which mental activities correlate with better comedown days."
+        focusStimulus.impactsAdherence = true
+        focusStimulus.asset = "brain.filled.head.profile"
+        focusStimulus.card = .grid
+        focusStimulus.priority = 7
 
-        let qualityOfLife = createQualityOfLifeSurveyTask(carePlanUUID: carePlanUUID)
+        // =====================================================================
+        // MARK: Task 6 — ADHD Check-In Survey
+        // =====================================================================
+        let adhdCheckIn = createADHDCheckInSurveyTask(carePlanUUID: medPlanUUID)
 
+        // =====================================================================
+        // Add all tasks
+        // =====================================================================
         _ = try await addTasksIfNotPresent(
             [
-                nausea,
-                doxylamine,
-                kegels,
-                stretch,
-                qualityOfLife
+                medicationLog,
+                comedownSeverity,
+                mealTiming,
+                exercise,
+                focusStimulus,
+                adhdCheckIn
             ]
         )
 
-        _ = try await addOnboardingTask(carePlanUUID)
-        _ = try await addUIKitSurveyTasks(carePlanUUID)
+        _ = try await addOnboardingTask(medPlanUUID)
+        _ = try await addUIKitSurveyTasks(medPlanUUID)
 
+        // =====================================================================
+        // MARK: Contacts
+        // =====================================================================
         var contact1 = OCKContact(
-            id: "jane",
-            givenName: "Jane",
-            familyName: "Daniels",
-            carePlanUUID: carePlanUUID
+            id: "drPatel",
+            givenName: "Priya",
+            familyName: "Patel",
+            carePlanUUID: medPlanUUID
         )
-        contact1.title = "Family Practice Doctor"
-        contact1.role = "Dr. Daniels is a family practice doctor with 8 years of experience."
-        contact1.emailAddresses = [OCKLabeledValue(label: CNLabelEmailiCloud, value: "janedaniels@uky.edu")]
-        contact1.phoneNumbers = [OCKLabeledValue(label: CNLabelWork, value: "(800) 257-2000")]
-        contact1.messagingNumbers = [OCKLabeledValue(label: CNLabelWork, value: "(800) 357-2040")]
+        contact1.title = "Psychiatrist"
+        contact1.role = "Dr. Patel specializes in adult ADHD medication management."
+        contact1.emailAddresses = [OCKLabeledValue(label: CNLabelEmailiCloud, value: "drpatel@adhdcare.com")]
+        contact1.phoneNumbers = [OCKLabeledValue(label: CNLabelWork, value: "(310) 555-0142")]
+        contact1.messagingNumbers = [OCKLabeledValue(label: CNLabelWork, value: "(310) 555-0143")]
         contact1.address = {
             let address = OCKPostalAddress(
                 street: "1500 San Pablo St",
@@ -249,21 +316,21 @@ extension OCKStore {
         }()
 
         var contact2 = OCKContact(
-            id: "matthew",
-            givenName: "Matthew",
-            familyName: "Reiff",
-            carePlanUUID: carePlanUUID
+            id: "sarahCoach",
+            givenName: "Sarah",
+            familyName: "Kim",
+            carePlanUUID: lifestylePlanUUID
         )
-        contact2.title = "OBGYN"
-        contact2.role = "Dr. Reiff is an OBGYN with 13 years of experience."
-        contact2.phoneNumbers = [OCKLabeledValue(label: CNLabelWork, value: "(800) 257-1000")]
-        contact2.messagingNumbers = [OCKLabeledValue(label: CNLabelWork, value: "(800) 257-1234")]
+        contact2.title = "ADHD Coach"
+        contact2.role = "Sarah helps clients build routines and coping strategies for ADHD."
+        contact2.phoneNumbers = [OCKLabeledValue(label: CNLabelWork, value: "(310) 555-0200")]
+        contact2.messagingNumbers = [OCKLabeledValue(label: CNLabelWork, value: "(310) 555-0201")]
         contact2.address = {
             let address = OCKPostalAddress(
-                street: "1500 San Pablo St",
+                street: "2025 Wilshire Blvd",
                 city: "Los Angeles",
                 state: "CA",
-                postalCode: "90033",
+                postalCode: "90057",
                 country: "US"
             )
             return address
@@ -277,78 +344,82 @@ extension OCKStore {
         )
     }
 
-    func createQualityOfLifeSurveyTask(carePlanUUID: UUID?) -> OCKTask {
-        let qualityOfLifeTaskId = TaskID.qualityOfLife
+    // MARK: - ADHD Check-In Survey
+
+    func createADHDCheckInSurveyTask(carePlanUUID: UUID?) -> OCKTask {
+        let taskId = TaskID.adhdCheckIn
         let thisMorning = Calendar.current.startOfDay(for: Date())
         let aFewDaysAgo = Calendar.current.date(byAdding: .day, value: -4, to: thisMorning)!
-        let beforeBreakfast = Calendar.current.date(byAdding: .hour, value: 8, to: aFewDaysAgo)!
-        let qualityOfLifeElement = OCKScheduleElement(
-            start: beforeBreakfast,
+        let evening = Calendar.current.date(byAdding: .hour, value: 19, to: aFewDaysAgo)!
+        let checkInElement = OCKScheduleElement(
+            start: evening,
             end: nil,
             interval: DateComponents(day: 1)
         )
-        let qualityOfLifeSchedule = OCKSchedule(
-            composing: [qualityOfLifeElement]
-        )
-        var qualityOfLife = OCKTask(
-            id: qualityOfLifeTaskId,
-            title: String(localized: "QUALITY_OF_LIFE"),
+        let checkInSchedule = OCKSchedule(composing: [checkInElement])
+
+        var checkIn = OCKTask(
+            id: taskId,
+            title: "ADHD Daily Check-In",
             carePlanUUID: carePlanUUID,
-            schedule: qualityOfLifeSchedule
+            schedule: checkInSchedule
         )
-        let textChoiceYesText = String(localized: "ANSWER_YES")
-        let textChoiceNoText = String(localized: "ANSWER_NO")
-        let yesValue = "Yes"
-        let noValue = "No"
-        let choices: [TextChoice] = [
-            .init(
-                id: "\(qualityOfLifeTaskId)_0",
-                choiceText: textChoiceYesText,
-                value: yesValue
-            ),
-            .init(
-                id: "\(qualityOfLifeTaskId)_1",
-                choiceText: textChoiceNoText,
-                value: noValue
-            )
+
+        let moodChoices: [TextChoice] = [
+            .init(id: "\(taskId)_mood_0", choiceText: "Great", value: "great"),
+            .init(id: "\(taskId)_mood_1", choiceText: "Good", value: "good"),
+            .init(id: "\(taskId)_mood_2", choiceText: "Okay", value: "okay"),
+            .init(id: "\(taskId)_mood_3", choiceText: "Low", value: "low"),
+            .init(id: "\(taskId)_mood_4", choiceText: "Struggling", value: "struggling")
         ]
-        let questionOne = SurveyQuestion(
-            id: "\(qualityOfLifeTaskId)-managing-time",
+        let moodQuestion = SurveyQuestion(
+            id: "\(taskId)-mood",
             type: .multipleChoice,
             required: true,
-            title: String(localized: "QUALITY_OF_LIFE_TIME"),
-            textChoices: choices,
+            title: "How is your overall mood right now?",
+            textChoices: moodChoices,
             choiceSelectionLimit: .single
         )
-        let questionTwo = SurveyQuestion(
-            id: qualityOfLifeTaskId,
+
+        let focusQuestion = SurveyQuestion(
+            id: "\(taskId)-focus",
             type: .slider,
-            required: false,
-            title: String(localized: "QUALITY_OF_LIFE_STRESS"),
-            detail: String(localized: "QUALITY_OF_LIFE_STRESS_DETAIL"),
+            required: true,
+            title: "How well were you able to focus today?",
+            detail: "0 = could not focus at all, 10 = laser-sharp focus",
             integerRange: 0...10,
             sliderStepValue: 1
         )
-        let taskAsset = "brain.head.profile"
-        let taskTitle = String(localized: "QUALITY_OF_LIFE")
-        let questions = [questionOne, questionTwo]
-        let stepOne = SurveyStep(
-            id: "\(qualityOfLifeTaskId)-step-1",
-            questions: questions,
-            asset: taskAsset,
-            title: taskTitle,
-            subtitle: String(localized: "ANSWER_HONESTLY")
+
+        let energyQuestion = SurveyQuestion(
+            id: "\(taskId)-energy",
+            type: .slider,
+            required: false,
+            title: "Rate your energy level right now",
+            detail: "0 = completely drained, 10 = fully energized",
+            integerRange: 0...10,
+            sliderStepValue: 1
         )
 
-        qualityOfLife.impactsAdherence = true
-        qualityOfLife.asset = "brain.head.profile"
-        qualityOfLife.instructions = String(localized: "QUALITY_OF_LIFE_STRESS_DETAIL")
-        qualityOfLife.card = .survey
-        qualityOfLife.priority = 1
-        qualityOfLife.surveySteps = [stepOne]
+        let step = SurveyStep(
+            id: "\(taskId)-step-1",
+            questions: [moodQuestion, focusQuestion, energyQuestion],
+            asset: "brain.head.profile",
+            title: "ADHD Daily Check-In",
+            subtitle: "Take a moment to reflect on your day"
+        )
 
-        return qualityOfLife
+        checkIn.impactsAdherence = true
+        checkIn.asset = "list.clipboard.fill"
+        checkIn.instructions = "A quick daily check-in to track your mood, focus, and energy levels."
+        checkIn.card = .survey
+        checkIn.priority = 3
+        checkIn.surveySteps = [step]
+
+        return checkIn
     }
+
+    // MARK: - Onboarding
 
     func addOnboardingTask(_ carePlanUUID: UUID?) async throws -> [OCKTask] {
         let onboardSchedule = OCKSchedule.dailyAtTime(
@@ -369,6 +440,8 @@ extension OCKStore {
         onboardTask.uiKitSurvey = .onboard
         return try await addTasksIfNotPresent([onboardTask])
     }
+
+    // MARK: - UIKit Survey Tasks (Reaction Time ActiveTask)
 
     func addUIKitSurveyTasks(_ carePlanUUID: UUID?) async throws -> [OCKTask] {
         let thisMorning = Calendar.current.startOfDay(for: Date())
@@ -398,36 +471,20 @@ extension OCKStore {
             targetValues: [],
             duration: .allDay
         )
-        let rangeOfMotionCheckSchedule = OCKSchedule(
+        let reactionTimeSchedule = OCKSchedule(
             composing: [dailyElement, weeklyElement]
         )
-        var rangeOfMotionTask = OCKTask(
-            id: RangeOfMotion.identifier(),
-            title: "Range Of Motion",
+        var reactionTimeTask = OCKTask(
+            id: ReactionTime.identifier(),
+            title: "Reaction Time Test",
             carePlanUUID: carePlanUUID,
-            schedule: rangeOfMotionCheckSchedule
+            schedule: reactionTimeSchedule
         )
-        rangeOfMotionTask.priority = 2
-        rangeOfMotionTask.asset = "figure.walk.motion"
-        rangeOfMotionTask.card = .uiKitSurvey
-        rangeOfMotionTask.uiKitSurvey = .rangeOfMotion
-        return try await addTasksIfNotPresent([rangeOfMotionTask])
-    }
-}
-
-private extension OCKTask {
-    mutating func setCardMetadata(
-        _ card: CareKitCard,
-        priority: Int,
-        survey: String? = nil
-    ) {
-        if userInfo == nil {
-            userInfo = [:]
-        }
-        userInfo?[TaskMetadataKey.card] = card.rawValue
-        userInfo?[TaskMetadataKey.priority] = String(priority)
-        if let survey {
-            userInfo?[TaskMetadataKey.survey] = survey
-        }
+        reactionTimeTask.instructions = "Measure your cognitive response time to track brain fog levels."
+        reactionTimeTask.priority = 5
+        reactionTimeTask.asset = "bolt.fill"
+        reactionTimeTask.card = .uiKitSurvey
+        reactionTimeTask.uiKitSurvey = .reactionTime
+        return try await addTasksIfNotPresent([reactionTimeTask])
     }
 }

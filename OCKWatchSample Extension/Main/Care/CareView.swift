@@ -20,10 +20,10 @@ struct CareView: View {
 
     var body: some View {
         ScrollView {
-			ForEach(orderedEvents) { event in
-                if event.result.task.id == TaskID.kegels {
+            ForEach(orderedEvents) { event in
+                if event.result.task.id == TaskID.exercise {
                     SimpleTaskView(event: event)
-				} else {
+                } else {
                     InstructionsTaskView(event: event)
                 }
             }
@@ -34,14 +34,14 @@ struct CareView: View {
         }
     }
 
-	private var orderedEvents: [CareStoreFetchedResult<OCKAnyEvent>] {
-		events.latest.sorted(by: { left, right in
-			let leftTaskID = left.result.task.id
-			let rightTaskID = right.result.task.id
+    private var orderedEvents: [CareStoreFetchedResult<OCKAnyEvent>] {
+        events.latest.sorted(by: { left, right in
+            let leftTaskID = left.result.task.id
+            let rightTaskID = right.result.task.id
 
-			return sortedTaskIDs[leftTaskID] ?? 0 < sortedTaskIDs[rightTaskID] ?? 0
-		})
-	}
+            return sortedTaskIDs[leftTaskID] ?? 0 < sortedTaskIDs[rightTaskID] ?? 0
+        })
+    }
 
     static func query() -> OCKEventQuery {
         let query = OCKEventQuery(for: Date())
@@ -62,6 +62,6 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         CareView()
             .environment(\.careStore, Utility.createPreviewStore())
-			.careKitStyle(Styler())
+            .careKitStyle(Styler())
     }
 }
