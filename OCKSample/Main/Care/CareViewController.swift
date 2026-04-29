@@ -363,12 +363,28 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
                 #endif
 
             case .custom:
-                let card = EventQueryView<MyCustomCardView>(
-                    query: query
-                )
-                .padding(.vertical, swiftUIPadding)
-                .formattedHostingController()
-                return [card]
+                if standardTask.id == TaskID.comedownSeverity {
+                    let card = EventQueryView<ComedownSeverityCardView>(
+                        query: query
+                    )
+                    .padding(.vertical, swiftUIPadding)
+                    .formattedHostingController()
+                    return [card]
+                } else if standardTask.id == TaskID.mealTiming {
+                    let card = EventQueryView<MealTimingCardView>(
+                        query: query
+                    )
+                    .padding(.vertical, swiftUIPadding)
+                    .formattedHostingController()
+                    return [card]
+                } else {
+                    let card = EventQueryView<MyCustomCardView>(
+                        query: query
+                    )
+                    .padding(.vertical, swiftUIPadding)
+                    .formattedHostingController()
+                    return [card]
+                }
 
             default:
                 return nil
