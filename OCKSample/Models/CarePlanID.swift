@@ -8,10 +8,10 @@
 
 import Foundation
 
-// TODO: Add care plans specific to your app here.
 enum CarePlanID: String, CaseIterable, Identifiable {
     var id: Self { self }
-    case health
-    case wellness
-    case nutrition
+    /// Tasks directly related to medication cycle and comedown tracking.
+    case medicationManagement
+    /// Lifestyle factors (meals, hydration, sleep, exercise, focus) that may influence comedown.
+    case lifestyleFactors
 }

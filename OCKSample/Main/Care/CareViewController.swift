@@ -195,12 +195,12 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
             #if os(iOS)
             if isCurrentDay {
                 if Calendar.current.isDate(date, inSameDayAs: Date()) {
-                    let tipTitle = "Benefits of exercising"
-                    let tipText = "Learn how activity can promote a healthy pregnancy."
+                    let tipTitle = "Managing Your Comedown"
+                    let tipText = "Track your meals, hydration, and exercise to find what helps most."
                     let tipView = TipView()
                     tipView.headerView.titleLabel.text = tipTitle
                     tipView.headerView.detailLabel.text = tipText
-                    tipView.imageView.image = UIImage(named: "exercise.jpg")
+                    tipView.imageView.image = UIImage(systemName: "brain.head.profile.fill")
                     tipView.customStyle = CustomStylerKey.defaultValue
                     listViewController.appendView(tipView, animated: false)
                 }
@@ -298,8 +298,15 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
                 return nil
 
             case .grid:
-                // Can be implememented based off of midterm.
+                #if os(iOS)
+                let card = OCKGridTaskViewController(
+                    query: query,
+                    store: self.store
+                )
+                return [card]
+                #else
                 return nil
+                #endif
 
             case .instruction:
                 let card = EventQueryView<InstructionsTaskView>(
@@ -371,8 +378,12 @@ final class CareViewController: OCKDailyPageViewController, @unchecked Sendable 
             switch healthTask.card {
 
             case .labeledValue:
-                // Can be implememented based off of midterm.
-                return nil
+                let card = EventQueryView<LabeledValueTaskView>(
+                    query: query
+                )
+                .padding(.vertical, swiftUIPadding)
+                .formattedHostingController()
+                return [card]
 
             case .numericProgress:
                 let card = EventQueryView<NumericProgressTaskView>(
