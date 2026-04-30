@@ -128,13 +128,14 @@ class Utility {
 					value: -20,
 					to: Date()
 				)
-                _ = try? await store.addPatient(patient)
+                let savedPatient = try? await store.addPatient(patient)
 				let startDate = Calendar.current.date(
 					byAdding: .day,
 					value: -30,
 					to: Date()
 				)!
                 try? await store.populateDefaultCarePlansTasksContacts(
+                    patientUUID: savedPatient?.uuid,
 					startDate: startDate
 				)
                 try? await store.populateSampleOutcomes(

@@ -85,7 +85,12 @@ class LoginViewModel: ObservableObject {
                     value: daysInThePastToGenerateSampleData,
                     to: currentDate
                 )! : currentDate
+                let patientUUID = try? await resolveLoggedInPatientUUID(
+                    appDelegate: appDelegate,
+                    providedPatient: careKitPatient
+                )
                 try await appDelegate.store.populateDefaultCarePlansTasksContacts(
+                    patientUUID: patientUUID,
                     startDate: startDate
                 )
                 try await appDelegate.healthKitStore.populateDefaultHealthKitTasks(
@@ -161,6 +166,7 @@ class LoginViewModel: ObservableObject {
 			to: currentDate
 		)! : currentDate
         try await appDelegate.store.populateDefaultCarePlansTasksContacts(
+            patientUUID: savedPatient.uuid,
 			startDate: startDate
 		)
         try await appDelegate.healthKitStore.populateDefaultHealthKitTasks(
@@ -177,6 +183,23 @@ class LoginViewModel: ObservableObject {
         NotificationCenter.default.post(.init(name: Notification.Name(rawValue: Constants.requestSync)))
         Logger.login.info("Successfully added a new Patient")
         return savedPatient
+    }
+
+    private func resolveLoggedInPatientUUID(
+        appDelegate: AppDelegate,
+        providedPatient: OCKPatient?
+    ) async throws -> UUID? {
+        if let providedPatient {
+            return providedPatient.uuid
+        }
+        let remoteClockUUID = try await Utility.getRemoteClockUUID()
+        do {
+            let patient = try await appDelegate.store.fetchPatient(withID: remoteClockUUID.uuidString)
+            return patient.uuid
+        } catch {
+            Logger.login.info("Unable to resolve patient UUID for care plans: \(error)")
+            return nil
+        }
     }
 
     // MARK: User intentional behavior
