@@ -14,11 +14,11 @@ struct TintColorFlipKey: EnvironmentKey {
         #if os(iOS) || os(visionOS)
         return UIColor {
             $0.userInterfaceStyle == .light
-            ? UIColor(#colorLiteral(red: 0.55, green: 0.35, blue: 0.95, alpha: 1))
-            : UIColor(#colorLiteral(red: 0.95, green: 0.3, blue: 0.6, alpha: 1))
+            ? UIColor(#colorLiteral(red: 0.25, green: 0.55, blue: 0.85, alpha: 1))
+            : UIColor(#colorLiteral(red: 0.35, green: 0.65, blue: 0.95, alpha: 1))
         }
         #else
-        return UIColor(#colorLiteral(red: 0.55, green: 0.35, blue: 0.95, alpha: 1))
+        return UIColor(#colorLiteral(red: 0.25, green: 0.55, blue: 0.85, alpha: 1))
         #endif
     }
 }
