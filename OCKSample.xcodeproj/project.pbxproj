@@ -15,6 +15,10 @@
 		0B6EF54E2F85B34D00E7E4DD /* Surveyable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70C2FF982F73412F00F8C6E3 /* Surveyable.swift */; };
 		0B6EF54F2F85B34D00E7E4DD /* CareKitTaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D100092F73490000AB008 /* CareKitTaskView.swift */; };
 		0B6EF5502F85B34D00E7E4DD /* SurveyViewSynchronizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9B110042F74010000AA004 /* SurveyViewSynchronizer.swift */; };
+		0B7550172FA2DF430071B52D /* ComedownSeverityCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7550152FA2DF430071B52D /* ComedownSeverityCardView.swift */; };
+		0B7550182FA2DF430071B52D /* MealTimingCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7550162FA2DF430071B52D /* MealTimingCardView.swift */; };
+		0B7550192FA2DF430071B52D /* ComedownSeverityCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7550152FA2DF430071B52D /* ComedownSeverityCardView.swift */; };
+		0B75501A2FA2DF430071B52D /* MealTimingCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7550162FA2DF430071B52D /* MealTimingCardView.swift */; };
 		0B7E4EDB2F5A2B65002E86E9 /* AddHealthKitTaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7E4EDA2F5A2B65002E86E9 /* AddHealthKitTaskView.swift */; };
 		0B7E4EDC2F5A2B65002E86E9 /* AddHealthKitTaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7E4EDA2F5A2B65002E86E9 /* AddHealthKitTaskView.swift */; };
 		0B8A8CF62F87285900E22C47 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B8A8CF52F87285900E22C47 /* ImagePicker.swift */; };
@@ -280,6 +284,8 @@
 		03580E3E23CFA2E400A57818 /* OCKSample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = OCKSample.entitlements; sourceTree = "<group>"; };
 		0520468223C3C1F2004F0F36 /* OCKSample.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = OCKSample.xctestplan; sourceTree = "<group>"; };
 		0B0D4C4D2FA2B73B00EAB066 /* ReactionTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactionTime.swift; sourceTree = "<group>"; };
+		0B7550152FA2DF430071B52D /* ComedownSeverityCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComedownSeverityCardView.swift; sourceTree = "<group>"; };
+		0B7550162FA2DF430071B52D /* MealTimingCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealTimingCardView.swift; sourceTree = "<group>"; };
 		0B7E4EDA2F5A2B65002E86E9 /* AddHealthKitTaskView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddHealthKitTaskView.swift; sourceTree = "<group>"; };
 		0B8A8CF52F87285900E22C47 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		0B8A8CFF2F87287800E22C47 /* ProfileImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileImageView.swift; sourceTree = "<group>"; };
@@ -643,6 +649,8 @@
 		70E3422C2DB058A7005124F9 /* Cards */ = {
 			isa = PBXGroup;
 			children = (
+				0B7550152FA2DF430071B52D /* ComedownSeverityCardView.swift */,
+				0B7550162FA2DF430071B52D /* MealTimingCardView.swift */,
 				A9B000012F73000100ABC001 /* MyCustomCardView.swift */,
 				A9B110052F74010000AA005 /* UIKit */,
 				70E3422D2DB0626A005124F9 /* Modifiers */,
@@ -1215,6 +1223,8 @@
 				707D29662DCBE68500980253 /* UserType.swift in Sources */,
 				707D29672DCBE68500980253 /* ContactView.swift in Sources */,
 				707D29682DCBE68500980253 /* NoHighlightStyle.swift in Sources */,
+				0B7550192FA2DF430071B52D /* ComedownSeverityCardView.swift in Sources */,
+				0B75501A2FA2DF430071B52D /* MealTimingCardView.swift in Sources */,
 				707D29692DCBE68500980253 /* LocalSyncSessionDelegate.swift in Sources */,
 				707D296A2DCBE68500980253 /* Constants.swift in Sources */,
 				707D296B2DCBE68500980253 /* AppDelegate+ParseRemoteDelegate.swift in Sources */,
@@ -1362,6 +1372,8 @@
 				70F921AE27CABE7700368CEC /* RemoteSessionDelegate.swift in Sources */,
 				70F03A952786093B00E5AFB4 /* OCKHealthKitPassthroughStore.swift in Sources */,
 				7036E4BF256DA089006E9A3C /* LoginViewModel.swift in Sources */,
+				0B7550172FA2DF430071B52D /* ComedownSeverityCardView.swift in Sources */,
+				0B7550182FA2DF430071B52D /* MealTimingCardView.swift in Sources */,
 				A9B000022F73000100ABC001 /* MyCustomCardView.swift in Sources */,
 				7036E517256F2413006E9A3C /* ProfileViewModel.swift in Sources */,
 				7099D20B29E98E400037CD8E /* InstallationChannel.swift in Sources */,

@@ -1,15 +1,16 @@
+//
+//  Consent.swift
+//  OCKSample
+//
+//  ADHD Comedown Tracker — Informed Consent
+//
+
 import Foundation
 
-/*
- TODO: The informedConsentHTML property allows you to display HTML
- on a ResearchKit survey. Modify the consent so it properly
- represents the use case of your application.
- */
-
 private let consentSigningParagraph = "<p>By signing below, I acknowledge that I have read this consent "
-    + "carefully, that I understand all of its terms, and that I enter into this study voluntarily. "
-    + "I understand that my information will only be used and disclosed for the purposes described "
-    + "in the consent and I can withdraw from the study at any time.</p>"
+    + "carefully, that I understand all of its terms, and that I am voluntarily choosing to use "
+    + "this application. I understand that my health and tracking data will only be used to help me "
+    + "understand my personal ADHD medication comedown patterns, and I can stop using the app at any time.</p>"
 
 let informedConsentHTML = """
     <!DOCTYPE html>
@@ -24,23 +25,32 @@ let informedConsentHTML = """
         </style>
     </head>
     <body>
-        <h1>Informed Consent</h1>
-        <h3>Study Expectations</h3>
+        <h1>ADHD Comedown Tracker — Informed Consent</h1>
+        <h3>What This App Does</h3>
         <ul>
-            <li>You will be asked to complete various study tasks such as surveys.</li>
-            <li>The study will send you notifications to remind you to complete these study tasks.</li>
-            <li>You will be asked to share various health data types to support the study goals.</li>
-            <li>The study is expected to last 4 years.</li>
-            <li>The study may reach out to you for future research opportunities.</li>
-            <li>Your information will be kept private and secure.</li>
-            <li>You can withdraw from the study at any time.</li>
+            <li>Tracks your ADHD medication schedule and comedown severity over time.</li>
+            <li>Logs lifestyle factors like meals, hydration, exercise, and focus activities.</li>
+            <li>Helps you visualize which habits correlate with better or worse comedowns.</li>
+            <li>Uses HealthKit data (steps, water intake, heart rate) to supplement your logs.</li>
         </ul>
-        <h3>Eligibility Requirements</h3>
+        <h3>What We Ask of You</h3>
+        <ul>
+            <li>Log your medication timing and comedown severity daily.</li>
+            <li>Complete brief check-ins about your mood, focus, and energy.</li>
+            <li>Optionally log meals, exercise, and focus activities for deeper insights.</li>
+            <li>Share relevant health data from Apple Health to enrich your tracking.</li>
+        </ul>
+        <h3>Your Privacy</h3>
+        <ul>
+            <li>Your data is stored securely and is private to you.</li>
+            <li>We do not sell or share your health information with third parties.</li>
+            <li>You can delete your data or stop using the app at any time.</li>
+        </ul>
+        <h3>Eligibility</h3>
         <ul>
             <li>Must be 18 years or older.</li>
-            <li>Must be able to read and understand English.</li>
-            <li>Must be the only user of the device on which you are participating in the study.</li>
-            <li>Must be able to sign your own consent form.</li>
+            <li>Must be the only user of this device for tracking purposes.</li>
+            <li>This app is not a substitute for professional medical advice.</li>
         </ul>
         \(consentSigningParagraph)
         <p>Please sign using your finger below.</p>
