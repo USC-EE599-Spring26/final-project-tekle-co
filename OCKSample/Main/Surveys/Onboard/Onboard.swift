@@ -1,3 +1,10 @@
+//
+//  Onboard.swift
+//  OCKSample
+//
+//  ADHD Comedown Tracker — Onboarding Flow
+//
+
 import CareKitStore
 import HealthKit
 #if canImport(ResearchKit)
@@ -13,71 +20,70 @@ struct Onboard: Surveyable {
 
 #if canImport(ResearchKit)
 extension Onboard {
-    /*
-     TODO: Modify the onboarding so it properly represents the
-     use case of your application. Changes should be made to
-     each of the steps in this type method. For example, you
-     should change: title, detailText, image, and imageContentMode,
-     and learnMoreItem.
-     */
     // swiftlint:disable:next function_body_length
     func createSurvey() -> ORKTask {
+
+        // MARK: Welcome Step
         let welcomeInstructionStep = ORKInstructionStep(
             identifier: "\(identifier()).welcome"
         )
-        welcomeInstructionStep.title = "Welcome!"
-        welcomeInstructionStep.detailText = "Thank you for joining our study. Tap Next to learn more before signing up."
-        welcomeInstructionStep.image = UIImage(named: "welcome-image")
-        welcomeInstructionStep.imageContentMode = .scaleAspectFill
+        welcomeInstructionStep.title = "Welcome to ComeDown"
+        welcomeInstructionStep.detailText = "Take control of your ADHD medication comedown. "
+            + "Track what helps, see what doesn't, and find your pattern. "
+            + "Tap Next to learn how it works."
+        welcomeInstructionStep.image = UIImage(systemName: "brain.head.profile.fill")
+        welcomeInstructionStep.imageContentMode = .scaleAspectFit
 
+        // MARK: Overview Step
         let studyOverviewInstructionStep = ORKInstructionStep(
             identifier: "\(identifier()).overview"
         )
-        studyOverviewInstructionStep.title = "Before You Join"
-        studyOverviewInstructionStep.iconImage = UIImage(systemName: "checkmark.seal.fill")
+        studyOverviewInstructionStep.title = "How ComeDown Works"
+        studyOverviewInstructionStep.iconImage = UIImage(systemName: "chart.line.uptrend.xyaxis")
 
-        let heartBodyItem = ORKBodyItem(
-            text: "The study will ask you to share some of your health data.",
+        let trackMedsBodyItem = ORKBodyItem(
+            text: "Log when you take your medication and rate your comedown severity.",
             detailText: nil,
-            image: UIImage(systemName: "heart.fill"),
+            image: UIImage(systemName: "pills.fill"),
             learnMoreItem: nil,
             bodyItemStyle: .image
         )
-        let completeTasksBodyItem = ORKBodyItem(
-            text: "You will be asked to complete various tasks over the duration of the study.",
+        let trackLifestyleBodyItem = ORKBodyItem(
+            text: "Track meals, hydration, exercise, and focus activities throughout the day.",
             detailText: nil,
-            image: UIImage(systemName: "checkmark.circle.fill"),
+            image: UIImage(systemName: "fork.knife"),
             learnMoreItem: nil,
             bodyItemStyle: .image
         )
-        let signatureBodyItem = ORKBodyItem(
-            text: "Before joining, we will ask you to sign an informed consent document.",
+        let insightsBodyItem = ORKBodyItem(
+            text: "See charts comparing your lifestyle choices against comedown severity over time.",
             detailText: nil,
-            image: UIImage(systemName: "signature"),
+            image: UIImage(systemName: "chart.bar.fill"),
             learnMoreItem: nil,
             bodyItemStyle: .image
         )
-        let secureDataBodyItem = ORKBodyItem(
-            text: "Your data is kept private and secure.",
+        let privacyBodyItem = ORKBodyItem(
+            text: "Your data stays private on your device and secure cloud backup.",
             detailText: nil,
             image: UIImage(systemName: "lock.fill"),
             learnMoreItem: nil,
             bodyItemStyle: .image
         )
         studyOverviewInstructionStep.bodyItems = [
-            heartBodyItem,
-            completeTasksBodyItem,
-            signatureBodyItem,
-            secureDataBodyItem
+            trackMedsBodyItem,
+            trackLifestyleBodyItem,
+            insightsBodyItem,
+            privacyBodyItem
         ]
 
+        // MARK: Consent Signature
         let webViewStep = ORKWebViewStep(
             identifier: "\(identifier()).signatureCapture",
             html: informedConsentHTML
         )
         webViewStep.showSignatureAfterContent = true
 
-        // HealthKit types needed for ADHD comedown tracking
+        // MARK: HealthKit Permissions
         let healthKitTypesToWrite: Set<HKSampleType> = [
             .quantityType(forIdentifier: .dietaryWater)!,
             .quantityType(forIdentifier: .activeEnergyBurned)!,
@@ -107,18 +113,21 @@ extension Onboard {
                 motionPermissionType
             ]
         )
-        requestPermissionsStep.title = "Health Data Request"
+        requestPermissionsStep.title = "Health Data Access"
         requestPermissionsStep.text =
-            "Please review the health data types below and enable sharing " +
-            "to contribute to the study."
+            "ComeDown uses health data to automatically track hydration, steps, "
+            + "and heart rate alongside your comedown logs. "
+            + "Please enable the permissions below for the best experience."
 
+        // MARK: Completion Step
         let completionStep = ORKCompletionStep(
             identifier: "\(identifier()).completionStep"
         )
-        completionStep.title = "Enrollment Complete"
+        completionStep.title = "You're All Set!"
         completionStep.text =
-            "Thank you for enrolling in this study. Your participation will " +
-            "contribute to meaningful research!"
+            "Start by logging your medication when you take it today. "
+            + "Over time, the Insights tab will reveal which habits help "
+            + "you manage your comedown best."
 
         return ORKOrderedTask(
             identifier: identifier(),
