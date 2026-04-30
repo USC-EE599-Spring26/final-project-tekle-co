@@ -107,20 +107,20 @@ struct LoginView: View {
                 case 1:
                     Task {
                         await viewModel.signup(
-							.patient,
-							username: usersname,
-							password: password,
-							firstName: firstName,
-							lastName: lastName,
+                            .patient,
+                            username: usersname,
+                            password: password,
+                            firstName: firstName,
+                            lastName: lastName,
                             email: email
-						)
+                        )
                     }
                 default:
                     Task {
                         await viewModel.login(
-							username: usersname,
-							password: password
-						)
+                            username: usersname,
+                            password: password
+                        )
                     }
                 }
             }, label: {
@@ -139,7 +139,7 @@ struct LoginView: View {
                         .frame(width: 300)
                 }
             })
-            .background(Color(.green))
+            .background(Color(red: 0.25, green: 0.55, blue: 0.85))
             .cornerRadius(15)
 
             Button(action: {
@@ -158,7 +158,7 @@ struct LoginView: View {
                     EmptyView()
                 }
             })
-            .background(Color(.lightGray))
+            .background(Color(red: 0.6, green: 0.75, blue: 0.9))
             .cornerRadius(15)
 
             // If an error occurs show it on the screen
@@ -174,7 +174,7 @@ struct LoginView: View {
                     colors: [
                         Color(tintColorFlip),
                         Color.accentColor
-					]
+                    ]
                 ),
                 startPoint: .top,
                 endPoint: .bottom
