@@ -137,7 +137,7 @@ class Utility {
                 try? await store.populateDefaultCarePlansTasksContacts(
 					startDate: startDate
 				)
-				try? await store.populateSampleOutcomes(
+                try? await store.populateSampleOutcomes(
 					startDate: startDate
 				)
             }
@@ -196,6 +196,41 @@ class Utility {
         }
     }
 
+    @MainActor
+    static func checkIfOnboardingIsComplete() async -> Bool {
+        #if os(iOS) && canImport(ResearchKit)
+        if UserDefaults.standard.bool(forKey: Constants.researchKitOnboardingCompletedKey) {
+            return true
+        }
+
+        guard let store = AppDelegateKey.defaultValue?.storeCoordinator else {
+            Logger.utility.error("CareKit store coordinator could not be unwrapped")
+            return false
+        }
+
+        let taskId = Onboard.identifier()
+        var outcomeQuery = OCKOutcomeQuery()
+        outcomeQuery.taskIDs = [taskId]
+
+        do {
+            let fromCoordinator = try await store.fetchAnyOutcomes(query: outcomeQuery)
+            if !fromCoordinator.isEmpty {
+                return true
+            }
+            // Writes sometimes surface on the underlying OCKStore before the coordinator aggregate sees them.
+            if let ockStore = AppDelegateKey.defaultValue?.store {
+                let fromStore = try await ockStore.fetchAnyOutcomes(query: outcomeQuery)
+                return !fromStore.isEmpty
+            }
+            return false
+        } catch {
+            return false
+        }
+        #else
+        return true
+        #endif
+    }
+
 	@MainActor
 	static func logoutAndResetAppState() async {
 		do {
@@ -203,6 +238,8 @@ class Utility {
 		} catch {
 			Logger.utility.error("Error logging out: \(error)")
 		}
+        UserDefaults.standard.removeObject(forKey: "CareViewController.hasShownCheckInPopup")
+        UserDefaults.standard.removeObject(forKey: "CareViewController.lastShownCheckInDay")
 		AppDelegateKey.defaultValue?.resetAppToInitialState()
 		PCKUtility.removeCache()
 	}
@@ -213,8 +250,10 @@ class Utility {
 		AppDelegateKey.defaultValue?.healthKitStore.requestHealthKitPermissionsForAllTasksInStore { error in
             guard let error = error else {
                 DispatchQueue.main.async {
-                    // swiftlint:disable:next line_length
-                    NotificationCenter.default.post(.init(name: Notification.Name(rawValue: Constants.finishedAskingForPermission)))
+                    let name = Notification.Name(
+                        rawValue: Constants.finishedAskingForPermission
+                    )
+                    NotificationCenter.default.post(.init(name: name))
                 }
                 return
             }

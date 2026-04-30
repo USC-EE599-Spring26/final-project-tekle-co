@@ -5,8 +5,8 @@
 //  Created by Corey Baker on 9/18/22.
 //  Copyright © 2022 Network Reconnaissance Lab. All rights reserved.
 //
-// swiftlint:disable:next line_length
-// This was built using tutorial: https://www.hackingwithswift.com/books/ios-swiftui/creating-tabs-with-tabview-and-tabitem
+// This was built using tutorial:
+// https://www.hackingwithswift.com/books/ios-swiftui/creating-tabs-with-tabview-and-tabitem
 
 import CareKitStore
 import CareKitUI
@@ -65,6 +65,9 @@ struct MainTabView: View {
 					}
 				}
 				.tag(3)
+        }
+        .onReceive(NotificationCenter.default.publisher(for: Notification.Name(Constants.shouldRefreshView))) { _ in
+            selectedTab = 0
         }
     }
 }

@@ -45,6 +45,6 @@
 	<key>WKApplication</key>
 	<true/>
 	<key>WKCompanionAppBundleIdentifier</key>
-	<string>edu.usc.netrecon.ParseCarekitSample</string>
+	<string>edu.usc.noahtekle981.OCKSample</string>
 </dict>
 </plist>
